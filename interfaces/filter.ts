@@ -1,0 +1,4 @@
+interface IFilter {
+
+    filter()
+}

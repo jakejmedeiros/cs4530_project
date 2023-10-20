@@ -1,0 +1,3 @@
+interface IData {
+    getDataType() : DataType
+}

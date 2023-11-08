@@ -1,4 +1,0 @@
-enum SortType {
-    ASC,
-    DESC
-}

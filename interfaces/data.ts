@@ -1,3 +1,0 @@
-interface IData {
-    getDataType() : DataType
-}

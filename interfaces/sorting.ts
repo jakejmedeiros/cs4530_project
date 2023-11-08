@@ -1,3 +1,0 @@
-interface ISorting {
-    sort()
-}

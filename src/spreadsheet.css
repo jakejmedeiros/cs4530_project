@@ -1,0 +1,14 @@
+.spreadsheet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spreadsheet .cell {
+  width: 8%;
+  height: 5%;
+  resize: none;
+  font-size: 24px;
+  text-align: center;
+}

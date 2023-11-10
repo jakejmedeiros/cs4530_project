@@ -1,3 +1,6 @@
+import { ICells } from "../interfaces/cells";
+import { IObserver } from "../interfaces/observer";
+
 export class Cells implements ICells {
     attatch(observer: IObserver) {
         throw new Error("Method not implemented.");

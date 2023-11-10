@@ -33,6 +33,6 @@ export class Grid {
 
     initialize(rows: number, columns: number): void {
         this.cells = Array.from({ length: rows }, () =>
-        Array.from({ length: columns }, () => new Cells()))
+        Array.from({ length: columns }, () => new Cells(null, 0, 0)))
     }
 }

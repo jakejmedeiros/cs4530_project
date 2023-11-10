@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import './spreadsheet.css';
-import { Cell } from './classes/cellsImpl';
 import { ICells } from './interfaces/cells.interface';
+import { Cells } from './classes/cellsImpl';
 
 export default function Spreadsheet() {
 
   const [cellEditValue, setCellEditValue] = useState('');
 
-  const testCell: ICells = new Cell(null, 0, 0);
+  const testCell: ICells = new Cells(null, 0, 0);
 
   const handleEnterPress = (e: { key: string; preventDefault: () => void; }) => {
     if (e.key === 'Enter') {

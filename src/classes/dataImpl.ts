@@ -1,6 +1,6 @@
 import { DataType } from "../enums/datatype";
 import { IData } from "../interfaces/data.interface";
-import { IFormulas } from "../interfaces/formulas.interface";
+import { IFormulas } from "../interfaces/formulas";
 import { Average } from "./formulas/average";
 import { Sum } from "./formulas/sum";
 

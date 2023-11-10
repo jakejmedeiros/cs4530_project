@@ -1,11 +1,11 @@
 import { DataType } from "../enums/datatype";
 import { ICells } from "../interfaces/cells.interface";
 import { IData } from "../interfaces/data.interface";
-import { IFormulas } from "../interfaces/formulas.interface";
-import { IObserver } from "../interfaces/observer.interface";
+import { IFormulas } from "../interfaces/formulas";
+import { IObserver } from "../interfaces/observer";
 import { Data } from "./dataImpl";
 
-export class Cell implements ICells {
+export class Cells implements ICells {
     private observers = new Array<IObserver>();
     private data: IData;
 

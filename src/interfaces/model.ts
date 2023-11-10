@@ -1,6 +1,7 @@
+
 import { Cells } from "../classes/cellsImpl";
 import { Grid } from "../classes/grid";
-import { ICells } from "./cells";
+import { ICells } from "./cells.interface";
 import { IErrorAlert } from "./erroralert";
 import { IObserver } from "./observer";
 
@@ -11,7 +12,7 @@ export class SpreadSheetModel {
     private _observers: IObserver[];
 
     public constructor() {
-        this._cells = new Cells();
+        this._cells = new Cells(null, 0, 0);
         this._errorAlert = null;
         this._grid = new Grid();
         this._observers = [];

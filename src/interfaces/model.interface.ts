@@ -14,7 +14,7 @@ export class SpreadSheetModel {
     public constructor() {
         this._cells = new Cells(null, 0, 0);
         this._errorAlert = null;
-        this._grid = new Grid();
+        this._grid = Grid.getInstance();
         this._observers = [];
     }
 

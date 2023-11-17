@@ -2,13 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-}
-
-.spreadsheet .cell {
-  width: 8%;
-  height: 5%;
-  resize: none;
-  font-size: 24px;
-  text-align: center;
+  margin-inline: 70%;
+  margin-top: 10%;
+  padding-right: 50%;
 }

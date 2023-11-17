@@ -1,17 +1,20 @@
-import { Row } from "./row";
+import { IColumn } from "src/interfaces/column.interface";
+import { ICells } from "src/interfaces/cells.interface";
 
-export class Column {
+export class Column implements IColumn{
 
-    removeColumn() {
-        throw new Error("Method not implemented.");
+    public constructor(private cells: ICells[]) {}
+
+    public removeCell(index: number):void  {
+        this.cells.splice(index, 1);
     }
 
-    addRow(row: Row) {
-        throw new Error("Method not implemented.");
+    public addCell(cell: ICells): void {
+        this.cells.push(cell);
     }
 
-    getSize() {
-        throw new Error("Method not implemented.");
+    public getSize(): number {
+        return this.cells.length;
     }
 
 }

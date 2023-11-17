@@ -1,29 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './spreadsheet.css';
 import { ICells } from './interfaces/cells.interface';
-import { Cells } from './classes/cellsImpl';
+import { CellBox } from './classes/reactComponents/cellBox';
+import { Grid } from './classes/grid';
 
 export default function Spreadsheet() {
 
-  const [cellEditValue, setCellEditValue] = useState('');
-
-  const testCell: ICells = new Cells(null, 0, 0);
-
-  const handleEnterPress = (e: { key: string; preventDefault: () => void; }) => {
-    if (e.key === 'Enter') {
-      e.preventDefault(); 
-      testCell.setData(cellEditValue);
-    }
-  };
+  const grid: Grid = Grid.getInstance();
+  grid.initialize(15,10);
+  const gridCells: Array<Array<ICells>> = grid.getCells();
 
   return (
     <div className='spreadsheet'>
-      <textarea className='cell' 
-      defaultValue={(testCell.getValue() ?? "").toString()}
-      onKeyDown={handleEnterPress}
-      onChange={(e) => {
-        setCellEditValue(e.target.value);
-      }}></textarea>
+      {gridCells.map((row, rowIdx) => (
+        <div key={rowIdx}>
+          {row.map((cell, cellIdx) => (
+            <div key={cellIdx}>
+              <CellBox cell={cell}></CellBox>
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   )
 }

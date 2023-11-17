@@ -1,8 +1,8 @@
 import { DataType } from "../enums/datatype";
 import { ICells } from "../interfaces/cells.interface";
 import { IData } from "../interfaces/data.interface";
-import { IFormulas } from "../interfaces/formulas";
-import { IObserver } from "../interfaces/observer";
+import { IFormulas } from "../interfaces/formulas.interface";
+import { IObserver } from "../interfaces/observer.interface";
 import { Data } from "./dataImpl";
 
 export class Cells implements ICells {

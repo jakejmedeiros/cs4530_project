@@ -2,8 +2,8 @@
 import { Cells } from "../classes/cellsImpl";
 import { Grid } from "../classes/grid";
 import { ICells } from "./cells.interface";
-import { IErrorAlert } from "./erroralert";
-import { IObserver } from "./observer";
+import { IErrorAlert } from "./erroralert.interface";
+import { IObserver } from "./observer.interface";
 
 export class SpreadSheetModel {
     private _cells: ICells;

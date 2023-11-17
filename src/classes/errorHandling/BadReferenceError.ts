@@ -3,7 +3,7 @@ import { IErrorAlert } from "../../interfaces/erroralert.interface";
 
 export class BadReferenceInFormula implements IErrorAlert {
 
-    public constructor(errorCell: ICells) {}
+    public constructor(private errorCell: ICells) {}
 
     report():any {
         throw new Error("Method not implemented.");

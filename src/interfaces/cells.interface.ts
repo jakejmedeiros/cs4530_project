@@ -1,6 +1,6 @@
 import { DataType } from "../enums/datatype"
-import { IFormulas } from "./formulas";
-import { IObserver } from "./observer";
+import { IFormulas } from "./formulas.interface";
+import { IObserver } from "./observer.interface";
 export interface ICells {
     attach(observer: IObserver): void;
     detach(observer: IObserver): void;

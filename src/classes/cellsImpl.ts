@@ -3,7 +3,9 @@ import { ICells } from "../interfaces/cells.interface";
 import { IData } from "../interfaces/data.interface";
 import { IFormulas } from "../interfaces/formulas.interface";
 import { IObserver } from "../interfaces/observer.interface";
+import { CellObserver } from "./cellObserver";
 import { Data } from "./dataImpl";
+import { Grid } from "./grid";
 
 export class Cells implements ICells {
     private observers = new Array<IObserver>();
@@ -32,8 +34,9 @@ export class Cells implements ICells {
         return this.data.getValue();
     }
 
-    public setData(data: String | number | IFormulas): void {
+    public setData(data: String | number | IFormulas | null): void {
         this.data.setData(data);
+        this.notify();
     }
 
     public getDataType(): DataType {
@@ -58,5 +61,13 @@ export class Cells implements ICells {
 
     public getY(): number {
         return this.y;
+    }
+
+    public cellReference(row: number, column: number): void {
+        const grid = Grid.getInstance();
+        const refCell = grid.getSingleCell(row, column);
+        new CellObserver(this);
+        const refValue: number | String | IFormulas | null = refCell.getValue();
+        this.setData(refValue);
     }
 }

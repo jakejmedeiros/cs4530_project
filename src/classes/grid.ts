@@ -37,6 +37,10 @@ export class Grid {
         return this.cells;
     }
 
+    public getSingleCell(row: number, column: number): ICells {
+        return this.cells[row][column];
+    }
+
     public selectCell(x: number, y: number): void {
         if (x >= 0 && x < this.cells.length && y >= 0 && y < this.cells[x].length) {
             this.selectedCell = this.cells[x][y];
@@ -47,7 +51,7 @@ export class Grid {
     }
 
     public initialize(rows: number, columns: number): void {
-        this.cells = Array.from({ length: rows }, () =>
-        Array.from({ length: columns }, () => new Cells(null, 0, 0)));
+        this.cells = Array.from({ length: columns }, () =>
+        Array.from({ length: rows }, () => new Cells(null, 0, 0)));
     }
 }

@@ -12,7 +12,7 @@ export class SpreadSheetModel {
     private _observers: IObserver[];
 
     public constructor() {
-        this._cells = new Cells(null, 0, 0);
+        this._cells = new Cells("", 0, 0);
         this._errorAlert = null;
         this._grid = Grid.getInstance();
         this._observers = [];

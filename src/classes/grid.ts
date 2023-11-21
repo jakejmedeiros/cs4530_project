@@ -51,7 +51,18 @@ export class Grid {
     }
 
     public initialize(rows: number, columns: number): void {
-        this.cells = Array.from({ length: columns }, () =>
-        Array.from({ length: rows }, () => new Cells(null, 0, 0)));
+        let x = 0;
+        const initCells: ICells[][] = [];
+        Array.from({ length: columns }, () => {
+            let y = 0;
+            let initRow: ICells[] = [];
+            Array.from({ length: rows }, () => {
+                initRow.push(new Cells("", x, y));
+                y++;
+            });
+            initCells.push(initRow);
+            x++;
+        })
+        this.cells = initCells;
     }
 }

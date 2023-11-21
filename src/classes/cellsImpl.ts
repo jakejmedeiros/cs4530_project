@@ -10,15 +10,17 @@ import { Grid } from "./grid";
 export class Cells implements ICells {
     private observers = new Array<IObserver>();
     private data: IData;
+    private state: String;
 
-    public constructor(value: String | number | null,
+    public constructor(value: String | number,
     private x: number, private y: number) {
         this.data = new Data(value);
+        this.state = "";
     }
 
     public attach(o: IObserver): void {
         if(!this.observers.includes(o)) {
-            this.observers.push(o)
+            this.observers.push(o);
         }
     }
     public detach(o: IObserver): void {
@@ -30,11 +32,11 @@ export class Cells implements ICells {
         }
     }
 
-    public getValue(): String | number | IFormulas | null {
+    public getValue(): String | number | IFormulas {
         return this.data.getValue();
     }
 
-    public setData(data: String | number | IFormulas | null): void {
+    public setData(data: String | number | IFormulas): void {
         this.data.setData(data);
         this.notify();
     }
@@ -47,12 +49,12 @@ export class Cells implements ICells {
         this.data.setDataType(dt);
     }
     
-    public getState(): any {
-        throw new Error("Method not implemented.");
+    public getState(): String {
+        return this.state;
     }
 
-    public setState(): void {
-        throw new Error("Method not implemented.");
+    public setState(input: String): void {
+        this.state = input;
     }
 
     public getX(): number {
@@ -66,8 +68,8 @@ export class Cells implements ICells {
     public cellReference(row: number, column: number): void {
         const grid = Grid.getInstance();
         const refCell = grid.getSingleCell(row, column);
-        new CellObserver(this);
-        const refValue: number | String | IFormulas | null = refCell.getValue();
+        new CellObserver(refCell);
+        const refValue: number | String | IFormulas = refCell.getValue();
         this.setData(refValue);
     }
 }

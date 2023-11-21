@@ -3,12 +3,19 @@ import { IObserver } from "../interfaces/observer.interface";
 
 // An observer class for a cell to keep track of cell's state
 export class CellObserver implements IObserver {
+    private state: String;
 
     public constructor(private cell: ICells) {
         cell.attach(this);
+        this.state = cell.getState();
     }
 
-    update(): void {
-        console.log("This cell was updated");
+    public update(): void {
+        console.log("This cell was updated: " + this.cell.getX() + ", " + this.cell.getY());
+        this.state = this.cell.getState();
+    }
+
+    public getCell() {
+        return this.cell;
     }
 }

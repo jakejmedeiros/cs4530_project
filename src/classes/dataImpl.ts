@@ -5,10 +5,10 @@ import { Average } from "./formulas/average";
 import { Sum } from "./formulas/sum";
 
 export class Data implements IData {
-    private value: String | number | IFormulas | null;
+    private value: String | number | IFormulas;
     private dataType: DataType;
 
-    public constructor(value: String | number | IFormulas | null) {
+    public constructor(value: String | number | IFormulas) {
         if (value instanceof String) {
             this.dataType = DataType.STRING;
         } else if (value instanceof Number) {
@@ -21,7 +21,7 @@ export class Data implements IData {
         this.value = value;
     }
 
-    public getValue(): number | String | IFormulas | null {
+    public getValue(): number | String | IFormulas {
         return this.value;
     }
 
@@ -33,7 +33,7 @@ export class Data implements IData {
         this.dataType = dt;
     }
 
-    public setData(value: String | number | IFormulas | null): void {
+    public setData(value: String | number | IFormulas): void {
         if (value instanceof String) {
             this.dataType = DataType.STRING;
         } else if (value instanceof Number) {

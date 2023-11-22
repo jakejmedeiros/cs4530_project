@@ -1,4 +1,3 @@
-import React from 'react'
 import { ICells } from 'src/interfaces/cells.interface';
 import { ColumnNameTranslate } from './columnNameTranslate';
 

@@ -24,7 +24,7 @@ export const CellBox: React.FC<cellProps> = (props: cellProps) => {
   // Checks if the input is a string or number
   const typeCheck = (): void => {
     if (isStringInput(cellEditValue)) {
-      const newInputList: String[] = cellEditValue.substring(1, cellEditValue.length-1).split(/\"\s*\+\s*\"/);
+      const newInputList: String[] = cellEditValue.substring(1, cellEditValue.length-1).split(/"\s*\+\s*"/);
       newInputList.map((str) => str.substring(1, str.length-1));
       const newInput = newInputList.join("");
       cell.setState(cellEditValue);

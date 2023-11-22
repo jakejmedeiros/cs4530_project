@@ -3,7 +3,6 @@ import './spreadsheet.css';
 import { ICells } from './interfaces/cells.interface';
 import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
-import { Cells } from './classes/cellsImpl';
 import { ColumnNameTranslate } from './classes/utils/columnNameTranslate';
 
 export default function Spreadsheet() {

@@ -1,7 +1,4 @@
-import { IColumn } from "src/interfaces/column.interface";
 import { Cells } from "./cellsImpl";
-import { Column } from "./column"
-import { IRow } from "src/interfaces/row.interface";
 import { ICells } from "src/interfaces/cells.interface";
 
 // Class for creating the grid of cells for the spreadsheet. Cells[x][y] where x is the row and y is the column

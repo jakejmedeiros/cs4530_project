@@ -1,5 +1,3 @@
-import React from 'react'
-
 // A util class to translate column letters into numbers and numbers into column letters
 export class ColumnNameTranslate {
 

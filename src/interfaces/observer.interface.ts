@@ -1,3 +1,6 @@
+import { ICells } from "./cells.interface";
+
 export interface IObserver {
-    update(): void
+    update(): void;
+    getCell(): ICells;
 }

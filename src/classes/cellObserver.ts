@@ -6,13 +6,11 @@ export class CellObserver implements IObserver {
     private state: String;
 
     public constructor(private cell: ICells) {
-        cell.attach(this);
         this.state = cell.getState();
     }
 
     public update(): void {
-        console.log("This cell was updated: " + this.cell.getX() + ", " + this.cell.getY());
-        this.state = this.cell.getState();
+        this.cell.updateState();
     }
 
     public getCell() {

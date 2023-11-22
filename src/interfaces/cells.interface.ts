@@ -12,6 +12,7 @@ export interface ICells {
     setDataType(dt: DataType): void;
     getState(): String;
     setState(input: String): void;
+    updateState(): void;
     getX(): number;
     getY(): number;
     cellReference(row: number, column: number): void;

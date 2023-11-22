@@ -6,6 +6,7 @@ import { IObserver } from "../interfaces/observer.interface";
 import { CellObserver } from "./cellObserver";
 import { Data } from "./dataImpl";
 import { Grid } from "./grid";
+import { Parser } from "./utils/parser";
 
 export class Cells implements ICells {
     private observers = new Array<IObserver>();
@@ -19,13 +20,19 @@ export class Cells implements ICells {
     }
 
     public attach(o: IObserver): void {
-        if(!this.observers.includes(o)) {
+        const sameObserver = (obs: IObserver) => {
+            return (obs.getCell().getX() === o.getCell().getX())
+            && (obs.getCell().getY() === o.getCell().getY());
+        };
+        if(!this.observers.some(sameObserver)) { 
             this.observers.push(o);
         }
     }
+
     public detach(o: IObserver): void {
         this.observers.splice(this.observers.indexOf(o));
     }
+
     public notify(): void {
         for (let o of this.observers) {
             o.update();
@@ -39,6 +46,11 @@ export class Cells implements ICells {
     public setData(data: String | number | IFormulas): void {
         this.data.setData(data);
         this.notify();
+    }
+
+    public updateState(): void {
+        console.log("Updating state...");
+        Parser.referenceParse(this, this.getState());
     }
 
     public getDataType(): DataType {
@@ -68,7 +80,7 @@ export class Cells implements ICells {
     public cellReference(row: number, column: number): void {
         const grid = Grid.getInstance();
         const refCell = grid.getSingleCell(row, column);
-        new CellObserver(refCell);
+        refCell.attach(new CellObserver(this));
         const refValue: number | String | IFormulas = refCell.getValue();
         this.setData(refValue);
     }

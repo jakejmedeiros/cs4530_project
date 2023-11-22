@@ -49,7 +49,6 @@ export class Cells implements ICells {
     }
 
     public updateState(): void {
-        console.log("Updating state...");
         Parser.referenceParse(this, this.getState());
     }
 

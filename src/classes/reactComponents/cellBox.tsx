@@ -31,7 +31,6 @@ export const CellBox: React.FC<cellProps> = (props: cellProps) => {
       setCellEditValue(newInput);
       cell.setData(cellEditValue);
     } else if (parseFloat(cellEditValue)) {
-      console.log((cellEditValue));
       setCellEditValue((cell.getValue() ?? "").toString());
     } else {
       const err: String = new InvalidDataTypeError(cell).toText();

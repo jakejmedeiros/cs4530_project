@@ -5,6 +5,7 @@ import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
 import { ColumnNameTranslate } from './classes/utils/columnNameTranslate';
 
+// Initial setup of the UI for the spreadsheet
 export default function Spreadsheet() {
 
   const numOfRows = 8;

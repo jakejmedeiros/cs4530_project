@@ -1,6 +1,7 @@
 import { ICells } from 'src/interfaces/cells.interface';
 import { ColumnNameTranslate } from './columnNameTranslate';
 
+// A class for util methods having to do with parsing
 export class Parser {
   
     // Parses when a user inputs a reference to a cell. Returns true if the input is a command (REF, SUM, AVG).

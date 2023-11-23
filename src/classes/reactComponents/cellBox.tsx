@@ -38,7 +38,7 @@ export const CellBox: React.FC<cellProps> = (props: cellProps) => {
     cell.setData(cellEditValue);
   }
 
-  // Handles when the user enters an input into a cell. Checks if user inputted a function or literal
+  // Handles when the user enters an input into a cell. Checks if user inputted a function or literal value
   const handleEnterPress = (): void => {
     const isCommand: boolean = Parser.referenceParse(cell, cellEditValue);
     if (!isCommand) {

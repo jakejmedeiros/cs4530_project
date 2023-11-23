@@ -1,6 +1,5 @@
 export enum DataType {
     STRING = 'String',
     NUMBER = 'number',
-    FORMULA = 'IFormulas',
-    NULL = 'null',
+    FORMULA = 'IFormulas'
 }

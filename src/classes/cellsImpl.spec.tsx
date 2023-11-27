@@ -4,14 +4,23 @@ import { Cells } from './cellsImpl';
 import { IObserver } from 'src/interfaces/observer.interface';
 import { CellObserver } from './cellObserver';
 import { DataType } from 'src/enums/datatype';
+import { Grid } from './grid';
 
 // Tests for methods in the Cells class
 describe('Cells', () => {
 
   let cellModel: ICells;
+  let cellModelWithString: ICells;
+  let cellModelWithNumber: ICells;
+  let grid: Grid;
 
   beforeEach((): void => {
     cellModel = new Cells("", 1, 2);
+    cellModelWithString = new Cells("this is a string", 3, 4);
+    cellModelWithNumber = new Cells(42, 5, 6);
+
+    grid = Grid.getInstance();
+    grid.initialize(10,10);
   });
 
   afterEach((): void => {
@@ -77,6 +86,34 @@ describe('Cells', () => {
       cellModel.setData(4+3);
 
       expect(cellModel.getDataType()).toEqual(DataType.NUMBER);
+    });
+  });
+
+  describe('cellReference()', (): void => {
+    it('cell2 should contain the same string as cell1 after calling cellReference', () => {
+      const x: number = 5;
+      const y: number = 4;
+
+      const cell1: ICells = grid.getSingleCell(x,y);
+      cell1.setData("test string");
+      const cell2: ICells = new Cells("", x, y);
+
+      cell2.cellReference(x,y);
+
+      expect(cell2.getValue()).toEqual("test string");
+    });
+
+    it('cell2 should contain the same number as cell1 after calling cellReference', () => {
+      const x: number = 5;
+      const y: number = 4;
+
+      const cell1: ICells = grid.getSingleCell(x,y);
+      cell1.setData(99);
+      const cell2: ICells = new Cells("", x, y);
+
+      cell2.cellReference(x,y);
+
+      expect(cell2.getValue()).toEqual(99);
     });
   });
 });

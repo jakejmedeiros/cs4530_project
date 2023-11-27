@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ICells } from '../../interfaces/cells.interface';
 import './cellBox.style.css'
 import { Parser } from '../utils/parser';
@@ -8,10 +8,11 @@ interface cellProps {
   cell: ICells;
 }
 
+// A react component to visualize a cell class
 export const CellBox: React.FC<cellProps> = (props: cellProps) => {
   
-  const cell: ICells = props.cell;
-  const [cellEditValue, setCellEditValue] = useState((cell.getValue() ?? "").toString());
+  const cell = props.cell;
+  const [cellEditValue, setCellEditValue] = useState<string>((cell.getValue() ?? "").toString());
 
   // Checks if the given input is contained within 
   const isStringInput = (input: String): boolean => {
@@ -21,7 +22,11 @@ export const CellBox: React.FC<cellProps> = (props: cellProps) => {
     && input.charAt(input.length - 1) === "'"))
   }
 
-  // Checks if the input is a string or number
+  useEffect(() => {
+    setCellEditValue((cell.getValue() ?? "").toString());
+  }, [cell]);
+
+  // Checks if the input is a string input or number input
   const typeCheck = (): void => {
     if (isStringInput(cellEditValue)) {
       const newInputList: String[] = cellEditValue.substring(1, cellEditValue.length-1).split(/"\s*\+\s*"/);

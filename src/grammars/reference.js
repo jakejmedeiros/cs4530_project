@@ -9,7 +9,7 @@ var grammar = {
     {"name": "main", "symbols": ["main$string$1", {"literal":"("}, "y", "x", {"literal":")"}], "postprocess": 
         function(data) {
             return {
-                function: data[0],
+                function: "REF",
                 row: data[3][0].join(''),
                 column: data[2][0].join('')
             };

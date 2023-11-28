@@ -13,8 +13,9 @@ export class Cells implements ICells {
     private observers = new Array<IObserver>();
     private data: IData;
     private state: String;
+    private isNeedsUpdate: boolean = false;
 
-    public constructor(value: String | number,
+    public constructor(value: String | number | IFormulas,
     private x: number, private y: number) {
         this.data = new Data(value);
         this.state = "";
@@ -44,7 +45,12 @@ export class Cells implements ICells {
         }
     }
 
-    // Returns the value of this cell's data. The data type should be a string, number, or IFormula
+    // Returns true if this cell contains observers, false otherwise
+    public hasObservers(): boolean {
+        return this.observers.length > 0;
+    }
+
+    // Returns the value of this cell's data. The data type should be a string or number
     public getValue(): String | number | IFormulas {
         return this.data.getValue();
     }

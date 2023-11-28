@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as csv from 'fast-csv';
 import { Cells } from "./cellsImpl";
 import { ICells } from "src/interfaces/cells.interface";
@@ -77,19 +76,20 @@ export class Grid {
     }
 
     //Save the entire grid into a .csv file using fast-csv
-    public saveToCSV(filePath: string): void {
-        const csvStream = csv.format({ headers: true });
-        const writableStream = fs.createWriteStream(filePath);
+    public saveToCSV(): void {
+        const csvContent = this.cells.map(row => row.map(cell => cell.getValue().toString()).join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
     
-        csvStream.pipe(writableStream);
-    
-        this.cells.forEach((row) => {
-            const rowData = row.map(cell => cell.getValue().toString());
-            csvStream.write(rowData);
-        });
-    
-        csvStream.end();
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'output.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
+    
 
     
     //Load from a .csv file using fast-csv

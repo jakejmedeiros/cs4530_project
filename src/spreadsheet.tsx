@@ -4,6 +4,7 @@ import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
 import { ColumnNameTranslate } from './classes/utils/columnNameTranslate';
 import { ICells } from './interfaces/cells.interface';
+import { GridComponent } from './classes/reactComponents/gridComponent';
 
 // Initial setup of the UI for the spreadsheet
 export default function Spreadsheet() {
@@ -14,17 +15,6 @@ export default function Spreadsheet() {
   let gridCells: Array<Array<ICells>> = grid.getCells();
 
   return (
-    <div className='spreadsheet'>
-      {gridCells.map((row, rowIdx) => (
-        <div key={rowIdx}>
-          {ColumnNameTranslate.columnToLetter(rowIdx + 1)}
-          {row.map((cell, cellIdx) => (
-            <div key={cellIdx}>
-              <CellBox initCell={cell}></CellBox>
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
+    <GridComponent cellMatrix={gridCells} />
   )
 }

@@ -51,5 +51,5 @@ export interface ICells {
 
     // Sets up for this cell to observe a cell at a given coordinate when that cell is referenced by
     // this cell 
-    cellReference(row: number, column: number): void;
+    cellReference(row: number, column: number): {refCell: ICells, observer: IObserver}
 }

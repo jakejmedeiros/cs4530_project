@@ -28,7 +28,7 @@ export class Parser {
   
     // Parses when a user inputs a reference to a cell. Returns true if the input is a REF, SUM, or AVERAGE command.
     // Returns false if the input is not a command
-    public static referenceParse(cell: ICells, input: String): boolean {
+    public static referenceParse(cell: ICells, input: String): ICells[] {
         try {
             const cleanInput: String = input.trim();
             const command = cleanInput.toUpperCase();
@@ -40,8 +40,11 @@ export class Parser {
                 parser.feed(command);
                 const column: number = ColumnNameTranslate.columnName(parser.results[0].column) - 1;
                 const row: number = parser.results[0].row - 1;
-                cell.cellReference(column, row);
-                return true;
+                const grid = Grid.getInstance();
+                const refCell: ICells = grid.getSingleCell(row, column);
+                // const observer: IObserver = new CellObserver(cell);
+                // ans = cell.cellReference(column, row);
+                return [refCell];
             } else if (method === "SUM") {
                 const nearley = require("nearley");
                 const grammar = require("src/grammars/sumRange.js");
@@ -54,7 +57,7 @@ export class Parser {
                 const cellRange: ICells[] = this.getCellList(r1, c1, r2, c2, cell);
                 const cellSum: IFormulas = new Sum(cell, cellRange);
                 cell.setData(cellSum);
-                return true;
+                return cellRange;
             } else if (method === "AVG") {
                 const nearley = require("nearley");
                 const grammar = require("src/grammars/avgRange.js");
@@ -67,12 +70,12 @@ export class Parser {
                 const cellRange: ICells[] = this.getCellList(r1, c1, r2, c2, cell);
                 const cellAvg: IFormulas = new Average(cell, cellRange);
                 cell.setData(cellAvg);
-                return true;
+                return cellRange;
             }
         } catch {
-            cell.setData(input);
+            return [];
         }
-        return false;
+        return [];
     }
 }
 

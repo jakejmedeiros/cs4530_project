@@ -10,6 +10,8 @@ export interface IFormulas {
     // Returns the current value of the calculation of this IFormulas's list of cells
     getCalculation(): number;
 
+    getReferences(): ICells[];
+
     // Reports an error of this IFormulas's input
     reportError(cell: ICells, error: ErrorType): any;
 }

@@ -103,11 +103,16 @@ export class Cells implements ICells {
 
     // Sets up for this cell to observe a cell at a given coordinate when that cell is referenced by
     // this cell
-    public cellReference(row: number, column: number): void {
+    public cellReference(row: number, column: number): {refCell: ICells, observer: IObserver} {
         const grid = Grid.getInstance();
-        const refCell = grid.getSingleCell(row, column);
-        refCell.attach(new CellObserver(this));
-        const refValue: number | String | IFormulas = refCell.getValue();
-        this.setData(refValue);
+        const refCell: ICells = grid.getSingleCell(row, column);
+        const observer: IObserver = new CellObserver(this);
+
+        // refCell.attach(new CellObserver(this));
+        // const refValue: number | String | IFormulas = refCell.getValue();
+        return {
+            refCell,
+            observer
+        }
     }
-}
+};

@@ -36,6 +36,10 @@ export class Sum implements IFormulas {
         }
         return sum;
     }
+
+    public getReferences(): ICells[] {
+        return this.references;
+    }
     
     // Reports an error encountered in this Sum's inputs when utilizing this class
     public reportError(cell: ICells, error: ErrorType): IErrorAlert {

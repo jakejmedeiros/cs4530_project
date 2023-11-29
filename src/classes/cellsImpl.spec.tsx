@@ -5,19 +5,17 @@ import { IObserver } from 'src/interfaces/observer.interface';
 import { CellObserver } from './cellObserver';
 import { DataType } from 'src/enums/datatype';
 import { Grid } from './grid';
+import { Sum } from './formulas/sum';
+import { IFormulas } from 'src/interfaces/formulas.interface';
 
 // Tests for methods in the Cells class
 describe('Cells', () => {
 
   let cellModel: ICells;
-  let cellModelWithString: ICells;
-  let cellModelWithNumber: ICells;
   let grid: Grid;
 
   beforeEach((): void => {
     cellModel = new Cells("", 1, 2);
-    cellModelWithString = new Cells("this is a string", 3, 4);
-    cellModelWithNumber = new Cells(42, 5, 6);
 
     grid = Grid.getInstance();
     grid.initialize(10,10);
@@ -90,7 +88,7 @@ describe('Cells', () => {
   });
 
   describe('cellReference()', (): void => {
-    it('cell2 should contain the same string as cell1 after calling cellReference', () => {
+    it('The result should contain the same string as cell1 after calling cellReference', () => {
       const x: number = 5;
       const y: number = 4;
 
@@ -98,12 +96,12 @@ describe('Cells', () => {
       cell1.setData("test string");
       const cell2: ICells = new Cells("", x, y);
 
-      cell2.cellReference(x,y);
+      const refAns: {refCell: ICells, observer: IObserver} = cell2.cellReference(x,y);
 
-      expect(cell2.getValue()).toEqual("test string");
+      expect(refAns.refCell.getValue()).toEqual("test string");
     });
 
-    it('cell2 should contain the same number as cell1 after calling cellReference', () => {
+    it('The result should contain the same number as cell1 after calling cellReference', () => {
       const x: number = 5;
       const y: number = 4;
 
@@ -111,9 +109,113 @@ describe('Cells', () => {
       cell1.setData(99);
       const cell2: ICells = new Cells("", x, y);
 
-      cell2.cellReference(x,y);
+      const refAns: {refCell: ICells, observer: IObserver} = cell2.cellReference(x,y);
 
-      expect(cell2.getValue()).toEqual(99);
+      expect(refAns.refCell.getValue()).toEqual(99);
+    });
+  });
+
+  describe('getObservers()', (): void => {
+    it('This should return an empty list because it is a brand new cell', () => {
+      const cell1: ICells = new Cells("test", 2, 5);
+
+      expect(cell1.getObservers()).toEqual([]);
+    });
+  });
+
+  describe('attach()', (): void => {
+    it('cell2 should contain an observer for cell1', () => {
+      const cell1: ICells = new Cells("test", 2, 5);
+      const cell2: ICells = new Cells("pop", 5, 6);
+
+      const obs: IObserver = new CellObserver(cell1);
+      cell2.attach(obs);
+
+      expect(cell2.getObservers().length).toEqual(1);
+    });
+
+    it("cell2 should not add an observer for cell1 a second time. cell2's observer list should only have one observer", () => {
+      const cell1: ICells = new Cells("test", 2, 5);
+      const cell2: ICells = new Cells("pop", 5, 6);
+
+      const obs: IObserver = new CellObserver(cell1);
+      const obs2: IObserver = new CellObserver(cell1);
+      cell2.attach(obs);
+      cell2.attach(obs2);
+
+      expect(cell2.getObservers().length).toEqual(1);
+    });
+  });
+
+  describe('detach()', (): void => {
+    it('cell2 should have nothing happen to its list of observers because it is initially empty', () => {
+      const cell1: ICells = new Cells("test", 2, 5);
+      const cell2: ICells = new Cells("pop", 5, 6);
+      
+      const obs: IObserver = new CellObserver(cell1);
+      cell2.detach(obs);
+
+      expect(cell2.getObservers().length).toEqual(0);
+    });
+
+    it("cell2's observer list should be empty after calling detach", () => {
+      const cell1: Cells = new Cells("test", 2, 5);
+      const cell2: ICells = new Cells("pop", 5, 6);
+
+      const obs: IObserver = new CellObserver(cell1);
+      cell2.attach(obs);
+
+      cell2.detach(obs);
+
+      expect(cell2.getObservers().length).toEqual(0);
+    });
+
+    it("cell2's observer list should be one less after calling detach", () => {
+      const cell1: Cells = new Cells("test", 2, 5);
+      const cell2: ICells = new Cells("pop", 5, 6);
+      const cell3: ICells = new Cells("foo", 3, 1);
+
+      const obs: IObserver = new CellObserver(cell1);
+      const obs3: IObserver = new CellObserver(cell3);
+      cell2.attach(obs);
+      cell2.attach(obs3);
+
+      cell2.detach(obs);
+
+      expect(cell2.getObservers().length).toEqual(1);
+    });
+  });
+
+  describe('getValue()', (): void => {
+    it("cell1's value should return 'test'", () => {
+      const cell1: ICells = new Cells("test", 2, 5);
+
+      expect(cell1.getValue()).toEqual('test');
+    });
+
+    it("cell1's value should return 34", () => {
+      const cell1: ICells = new Cells(34, 2, 5);
+
+      expect(cell1.getValue()).toEqual(34);
+    });
+
+    it("cell1's value should return a Sum class", () => {
+      const cell1: ICells = new Cells(0, 2, 5);
+
+      const cell2: ICells = new Cells(2, 2, 5);
+      const cell3: ICells = new Cells(3, 2, 6);
+      const cell4: ICells = new Cells(5, 2, 7);
+      const cell5: ICells = new Cells(10, 3, 5);
+      const cell6: ICells = new Cells(6, 3, 6);
+      const cell7: ICells = new Cells(-4, 3, 7);
+
+      const cellRange: ICells[] = [cell2, cell3, cell4, cell5, cell6, cell7];
+
+      const sum: IFormulas = new Sum(cell1, cellRange);
+
+      cell1.setData(sum);
+
+      expect(cell1.getValue() instanceof Sum).toEqual(true);
     });
   });
 });

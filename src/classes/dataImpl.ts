@@ -27,11 +27,7 @@ export class Data implements IData {
 
     // Returns the value from this Data. Converts it into a number if the value is an IFormulas
     public getValue(): number | String | IFormulas {
-        if (this.value instanceof Sum || this.value instanceof Average) {
-            return this.value.getCalculation();
-        } else {
-            return this.value;
-        }
+        return this.value;
     }
 
     // Returns the type of value in this Data

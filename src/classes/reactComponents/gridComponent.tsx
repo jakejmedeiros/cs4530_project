@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ICells } from 'src/interfaces/cells.interface';
 import { ColumnNameTranslate } from '../utils/columnNameTranslate';
 import { CellBox } from './cellBox';
@@ -10,21 +10,21 @@ interface GridProps {
 
   // A react component to render the grid of cells
   export const GridComponent: React.FC<GridProps> = ({ cellMatrix }) => {
-    const gridCells: Array<Array<ICells>> = cellMatrix;
+    const [gridCells, setGridCells] = useState(cellMatrix);
     const grid = Grid.getInstance();
 
     return (
         <div className='spreadsheet'>
-        {gridCells.map((row, rowIdx) => (
-            <div key={rowIdx}>
-            {ColumnNameTranslate.columnToLetter(rowIdx + 1)}
-            {row.map((cell, cellIdx) => (
-                <div key={cellIdx}>
-                    <CellBox initCell={cell}></CellBox>
+            {gridCells.map((row, rowIdx) => (
+                <div key={rowIdx}>
+                {ColumnNameTranslate.columnToLetter(rowIdx + 1)}
+                {row.map((cell, cellIdx) => (
+                    <div key={cellIdx}>
+                        <CellBox initCell={cell}></CellBox>
+                    </div>
+                ))}
                 </div>
             ))}
-            </div>
-        ))}
         </div>
     )
 }

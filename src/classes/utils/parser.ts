@@ -6,6 +6,9 @@ import { Average } from '../formulas/average';
 import { IObserver } from 'src/interfaces/observer.interface';
 import { CellObserver } from '../cellObserver';
 import { IFormulas } from 'src/interfaces/formulas.interface';
+import { IErrorAlert } from 'src/interfaces/erroralert.interface';
+import { InvalidDataTypeError } from '../errorHandling/InvalidDataTypeError';
+import { create, all } from 'mathjs';
 
 // A class for util methods having to do with parsing
 export class Parser {
@@ -28,7 +31,15 @@ export class Parser {
   
     // Parses when a user inputs a reference to a cell. Returns true if the input is a REF, SUM, or AVERAGE command.
     // Returns false if the input is not a command
-    public static referenceParse(cell: ICells, input: String): ICells[] {
+    public static referenceParse(cell: ICells, input: String): {output: String | number, attaches: ICells[]} {
+        type referenceSet = {
+            output: String | number,
+            attaches: ICells[]
+        }
+        const ref: referenceSet = {
+            output: "",
+            attaches: []
+        }
         try {
             const cleanInput: String = input.trim();
             const command = cleanInput.toUpperCase();
@@ -41,10 +52,16 @@ export class Parser {
                 const column: number = ColumnNameTranslate.columnName(parser.results[0].column) - 1;
                 const row: number = parser.results[0].row - 1;
                 const grid = Grid.getInstance();
-                const refCell: ICells = grid.getSingleCell(row, column);
-                // const observer: IObserver = new CellObserver(cell);
-                // ans = cell.cellReference(column, row);
-                return [refCell];
+                const refCell: ICells = grid.getSingleCell(column, row);
+                let refVal = refCell.getValue();
+                let refAns: String | number = "";
+                if (refVal instanceof Sum || refVal instanceof Average) {
+                    refAns = refVal.getCalculation();
+                } else if (typeof refVal === 'number' || typeof refVal === 'string') {
+                    refAns = refVal;
+                }
+                ref.output = refAns;
+                ref.attaches = [refCell];
             } else if (method === "SUM") {
                 const nearley = require("nearley");
                 const grammar = require("src/grammars/sumRange.js");
@@ -56,8 +73,8 @@ export class Parser {
                 const r2: number = parser.results[0].endRow - 1;
                 const cellRange: ICells[] = this.getCellList(r1, c1, r2, c2, cell);
                 const cellSum: IFormulas = new Sum(cell, cellRange);
-                cell.setData(cellSum);
-                return cellRange;
+                ref.output = cellSum.getCalculation();
+                ref.attaches = cellRange;
             } else if (method === "AVG") {
                 const nearley = require("nearley");
                 const grammar = require("src/grammars/avgRange.js");
@@ -69,13 +86,89 @@ export class Parser {
                 const r2: number = parser.results[0].endRow - 1;
                 const cellRange: ICells[] = this.getCellList(r1, c1, r2, c2, cell);
                 const cellAvg: IFormulas = new Average(cell, cellRange);
-                cell.setData(cellAvg);
-                return cellRange;
+                ref.output = cellAvg.getCalculation();
+                ref.attaches = cellRange;
             }
         } catch {
-            return [];
+            return ref;
         }
-        return [];
+        return ref;
+    }
+
+    // Checks if the given input is contained within 
+    private static isStringInput = (input: String): boolean => {
+        return ((input.charAt(0) === '"'
+        && input.charAt(input.length - 1) === '"')
+        || (input.charAt(0) === "'"
+        && input.charAt(input.length - 1) === "'"))
+    }
+
+    // Checks if the input is a string input or number input
+    private static typeCheck = (input: any, cell: ICells): number | String | IErrorAlert => {
+        let newInput: number | String | IErrorAlert = "";
+        if (this.isStringInput(input)) {
+            newInput = input.substring(1, input.length-1);
+        } else if (parseFloat(input)) {
+            newInput = parseFloat(input);
+        } else {
+            const err: IErrorAlert = new InvalidDataTypeError(cell);
+            newInput = err;
+        }
+        return newInput;
+    }
+
+    // Processes a single command. It can either be a single command or from a formula
+    private static commandCheck = (command: String, cell: ICells): String | number | IErrorAlert => {
+        let input;
+        //commandReferences is the list of cells to attach an observer to
+        const commandReferences: {output: String | number, attaches: ICells[]} = this.referenceParse(cell, command);
+        if (commandReferences.attaches.length === 0) {
+          input = this.typeCheck(command, cell);
+        } else {
+          input = commandReferences.output;
+          const attaches = commandReferences.attaches;
+          attaches.forEach(observedCell => {
+            const obs: IObserver = new CellObserver(cell);
+            observedCell.attach(obs);
+          });
+        }
+        return input;
+      }
+
+    // Runs the given state of a cell
+    public static runCellState(cell: ICells): void {
+        const state: String = cell.getState();
+        let newValue: String | number = '';
+        const commandList: String[] = state.split(/(\+|-|\*|\/|\^)/);
+        let parsedList: String[] = [];
+        let typeTracker: String = "";
+        commandList.forEach(command => {
+        let commItem: String | number | IErrorAlert = "";
+        if (command === '+' || command === '-' || command === '*' || command === '/' || command === '^') {
+            commItem = command;
+        } else {
+            commItem = this.commandCheck(command, cell);
+            if (typeTracker !== "" && typeof commItem !== typeTracker) {
+            const err = new InvalidDataTypeError(cell);
+            return err.toText();
+            } else {
+            typeTracker = typeof commItem;
+            commItem = commItem.toString();
+            }
+        }
+            parsedList.push(commItem);
+        });
+        if (typeTracker === 'number') {
+            newValue = parsedList.join('');
+            // from mathjs package
+            const math = create(all);
+            const result: number = math.evaluate(newValue as string);
+            cell.setData(result);
+        } else if (typeTracker === 'string') {
+            parsedList = parsedList.filter((str) => str !== "+");
+            newValue = parsedList.join('');
+            cell.setData(newValue.toString());
+        };
     }
 }
 

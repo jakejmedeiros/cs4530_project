@@ -14,8 +14,8 @@ export interface ICells {
     // This cell should notify its observers whenever its data changes
     notify(): void;
 
-    // Returns true if this cell contains observers, false otherwise
-    hasObservers(): boolean;
+    // Returns this cell's list of observers
+    getObservers(): IObserver[];
 
     // Returns the value of this cell's data. The data type should be a string, number, or IFormula
     getValue(): String | number | IFormulas;

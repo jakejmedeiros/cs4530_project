@@ -13,7 +13,6 @@ export class Cells implements ICells {
     private observers = new Array<IObserver>();
     private data: IData;
     private state: String;
-    private isNeedsUpdate: boolean = false;
 
     public constructor(value: String | number | IFormulas,
     private x: number, private y: number) {
@@ -28,13 +27,14 @@ export class Cells implements ICells {
             && (obs.getCell().getY() === o.getCell().getY());
         };
         if(!this.observers.some(sameObserver)) { 
-            this.observers.push(o);
+            this.observers = [...this.observers, o];
         }
     }
 
     // Removes the given observer from this cell's list of observers
     public detach(o: IObserver): void {
-        this.observers.splice(this.observers.indexOf(o));
+        const newObs: IObserver[] = this.observers.filter(obs => (obs.getCell().getX() !== o.getCell().getX()) && (obs.getCell().getY() !== o.getCell().getY()));
+        this.observers = newObs;
     }
 
     // Notifies every observer in this cell's list of observers.
@@ -45,9 +45,9 @@ export class Cells implements ICells {
         }
     }
 
-    // Returns true if this cell contains observers, false otherwise
-    public hasObservers(): boolean {
-        return this.observers.length > 0;
+    // Returns this cell's list of observers
+    public getObservers(): IObserver[] {
+        return this.observers;
     }
 
     // Returns the value of this cell's data. The data type should be a string or number
@@ -64,7 +64,7 @@ export class Cells implements ICells {
     // Updates the cell. Usually called when a cell that this cell is observing has 
     // its value changed
     public updateCell(): void {
-        Parser.referenceParse(this, this.getState());
+        Parser.runCellState(this);
     }
 
     // Return the data type of this cell's data. It is an enum of 
@@ -107,9 +107,6 @@ export class Cells implements ICells {
         const grid = Grid.getInstance();
         const refCell: ICells = grid.getSingleCell(row, column);
         const observer: IObserver = new CellObserver(this);
-
-        // refCell.attach(new CellObserver(this));
-        // const refValue: number | String | IFormulas = refCell.getValue();
         return {
             refCell,
             observer

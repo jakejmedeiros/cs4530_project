@@ -13,6 +13,7 @@ export class Cells implements ICells {
     private observers = new Array<IObserver>();
     private data: IData;
     private state: String;
+    private cellView: ((setCellEditValue: any) => {}) = () => {return 0};
 
     public constructor(value: String | number | IFormulas,
     private x: number, private y: number) {
@@ -65,6 +66,11 @@ export class Cells implements ICells {
     // its value changed
     public updateCell(): void {
         Parser.runCellState(this);
+        this.cellView(this.getValue());
+    }
+
+    public setCellState(setCellEditValue: any): any {
+        this.cellView = setCellEditValue;
     }
 
     // Return the data type of this cell's data. It is an enum of 

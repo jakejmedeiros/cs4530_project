@@ -17,6 +17,8 @@ export interface ICells {
     // Returns this cell's list of observers
     getObservers(): IObserver[];
 
+    setCellState(setCellEditValue: any): any;
+
     // Returns the value of this cell's data. The data type should be a string, number, or IFormula
     getValue(): String | number | IFormulas;
 

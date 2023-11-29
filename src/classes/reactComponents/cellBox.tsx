@@ -16,6 +16,7 @@ export const CellBox: React.FC<CellProps> = ({ initCell }) => {
   // Checks if user inputted a formula, reference, or literal value
   const handleEnterPress = (): void => {
     cell.setState(cellEditValue);
+    cell.setCellState(setCellEditValue)
     Parser.runCellState(cell);
     setCellEditValue((cell.getValue() ?? "").toString());
   };

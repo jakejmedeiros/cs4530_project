@@ -4,9 +4,17 @@ import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
 import { ICells } from './interfaces/cells.interface';
 
+interface ContextMenuState {
+  x: number;
+  y: number;
+  rowIndex: number;
+  columnIndex: number;
+}
+
 export default function Spreadsheet() {
   const grid = Grid.getInstance();
   const [gridCells, setGridCells] = useState<ICells[][]>([]);
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
   useEffect(() => {
     grid.initialize(2, 10);
@@ -32,6 +40,12 @@ export default function Spreadsheet() {
     grid.removeColumn();
     setGridCells([...grid.getCells()]); 
   };
+
+  const handleClearColumn = (targetColumn: number) => {
+    grid.clearColumn(targetColumn);
+    setGridCells([...grid.getCells()])
+  }
+
 
   
 
@@ -67,4 +81,25 @@ export default function Spreadsheet() {
       ))}
     </div>
   );
-}
+};
+
+
+export function ContextMenu( x: number, y: number, onClearRow: (target: number) => void, onClearColumn: (target: number) => void) {
+  const menuStyle = {
+    position: 'absolute',
+    top: `${y}px`,
+    left: `${x}px`,
+    zIndex: 1000,
+    background: '#fff',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+  };
+
+  return (
+    <ul className="context-menu">
+      <li onClick={onClearRow}>Clear Row</li>
+      <li onClick={handleCl}>Clear Column</li>
+    </ul>
+  );
+};

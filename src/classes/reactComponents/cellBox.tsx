@@ -1,63 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { ICells } from '../../interfaces/cells.interface';
 import './cellBox.style.css'
 import { Parser } from '../utils/parser';
-import { InvalidDataTypeError } from '../errorHandling/InvalidDataTypeError';
 
-interface cellProps {
-  cell: ICells;
+interface CellProps {
+  initCell: ICells;
 }
 
 // A react component to visualize a cell class
-export const CellBox: React.FC<cellProps> = (props: cellProps) => {
-  
-  const cell = props.cell;
-  const [cellEditValue, setCellEditValue] = useState<string>((cell.getValue() ?? "").toString());
+export const CellBox: React.FC<CellProps> = ({ initCell }) => {
+  const [cell, setCell] = useState(initCell);
+  const [cellEditValue, setCellEditValue] = useState((cell.getValue() ?? "").toString());
 
-  // Checks if the given input is contained within 
-  const isStringInput = (input: String): boolean => {
-    return ((input.charAt(0) === '"'
-    && input.charAt(input.length - 1) === '"')
-    || (input.charAt(0) === "'"
-    && input.charAt(input.length - 1) === "'"))
-  }
-
-  useEffect(() => {
-    setCellEditValue((cell.getValue() ?? "").toString());
-  }, [cell]);
-
-  // Checks if the input is a string input or number input
-  const typeCheck = (): void => {
-    if (isStringInput(cellEditValue)) {
-      const newInputList: String[] = cellEditValue.substring(1, cellEditValue.length-1).split(/"\s*\+\s*"/);
-      newInputList.map((str) => str.substring(1, str.length-1));
-      const newInput = newInputList.join("");
-      cell.setState(cellEditValue);
-      setCellEditValue(newInput);
-      cell.setData(cellEditValue);
-    } else if (parseFloat(cellEditValue)) {
-      setCellEditValue((cell.getValue() ?? "").toString());
-    } else {
-      const err: String = new InvalidDataTypeError(cell).toText();
-    }
-    cell.setData(cellEditValue);
-  }
-
-  // Handles when the user enters an input into a cell. Checks if user inputted a function or literal value
+  // Handles when the user enters an input into a cell and either presses the enter/return key or clicks outside of this cell.
+  // Checks if user inputted a formula, reference, or literal value
   const handleEnterPress = (): void => {
-    const isCommand: boolean = Parser.referenceParse(cell, cellEditValue);
-    if (!isCommand) {
-      typeCheck();
-    } else {
-      handleFormula();
-    }
+    cell.setState(cellEditValue);
+    cell.setCellState(setCellEditValue)
+    Parser.runCellState(cell);
     setCellEditValue((cell.getValue() ?? "").toString());
   };
-
-  const handleFormula = (): void => {
-    
-  }
-
+        
   return (
     <div>
         <textarea className='cell'
@@ -66,10 +29,14 @@ export const CellBox: React.FC<cellProps> = (props: cellProps) => {
             if (e.key === 'Enter') {
               e.preventDefault(); 
               handleEnterPress();
+              e.currentTarget.blur();
             }
           }}
           onChange={(e) => {
             setCellEditValue(e.target.value);
+          }}
+          onClick={(e) => {
+            setCellEditValue((cell.getState() ?? "").toString());
           }}
           onBlur={(e) => {
             handleEnterPress();

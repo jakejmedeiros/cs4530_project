@@ -13,8 +13,9 @@ export class Cells implements ICells {
     private observers = new Array<IObserver>();
     private data: IData;
     private state: String;
+    private cellView: ((setCellEditValue: any) => {}) = () => {return 0};
 
-    public constructor(value: String | number,
+    public constructor(value: String | number | IFormulas,
     private x: number, private y: number) {
         this.data = new Data(value);
         this.state = "";
@@ -27,13 +28,14 @@ export class Cells implements ICells {
             && (obs.getCell().getY() === o.getCell().getY());
         };
         if(!this.observers.some(sameObserver)) { 
-            this.observers.push(o);
+            this.observers = [...this.observers, o];
         }
     }
 
     // Removes the given observer from this cell's list of observers
     public detach(o: IObserver): void {
-        this.observers.splice(this.observers.indexOf(o));
+        const newObs: IObserver[] = this.observers.filter(obs => (obs.getCell().getX() !== o.getCell().getX()) && (obs.getCell().getY() !== o.getCell().getY()));
+        this.observers = newObs;
     }
 
     // Notifies every observer in this cell's list of observers.
@@ -44,7 +46,12 @@ export class Cells implements ICells {
         }
     }
 
-    // Returns the value of this cell's data. The data type should be a string, number, or IFormula
+    // Returns this cell's list of observers
+    public getObservers(): IObserver[] {
+        return this.observers;
+    }
+
+    // Returns the value of this cell's data. The data type should be a string or number
     public getValue(): String | number | IFormulas {
         return this.data.getValue();
     }
@@ -58,7 +65,12 @@ export class Cells implements ICells {
     // Updates the cell. Usually called when a cell that this cell is observing has 
     // its value changed
     public updateCell(): void {
-        Parser.referenceParse(this, this.getState());
+        Parser.runCellState(this);
+        this.cellView(this.getValue());
+    }
+
+    public setCellState(setCellEditValue: any): any {
+        this.cellView = setCellEditValue;
     }
 
     // Return the data type of this cell's data. It is an enum of 
@@ -97,11 +109,13 @@ export class Cells implements ICells {
 
     // Sets up for this cell to observe a cell at a given coordinate when that cell is referenced by
     // this cell
-    public cellReference(row: number, column: number): void {
+    public cellReference(row: number, column: number): {refCell: ICells, observer: IObserver} {
         const grid = Grid.getInstance();
-        const refCell = grid.getSingleCell(row, column);
-        refCell.attach(new CellObserver(this));
-        const refValue: number | String | IFormulas = refCell.getValue();
-        this.setData(refValue);
+        const refCell: ICells = grid.getSingleCell(row, column);
+        const observer: IObserver = new CellObserver(this);
+        return {
+            refCell,
+            observer
+        }
     }
-}
+};

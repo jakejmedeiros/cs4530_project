@@ -3,7 +3,7 @@ import './spreadsheet.css';
 import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
 import { ICells } from './interfaces/cells.interface';
-import { ContextMenu } from './classes/reactComponents/contextMenu'
+import { ContextMenu } from './classes/reactComponents/contextMenu';
 
 interface ContextMenuState {
   x: number;

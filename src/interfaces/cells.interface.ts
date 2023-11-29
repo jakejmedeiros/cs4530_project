@@ -14,6 +14,11 @@ export interface ICells {
     // This cell should notify its observers whenever its data changes
     notify(): void;
 
+    // Returns this cell's list of observers
+    getObservers(): IObserver[];
+
+    setCellState(setCellEditValue: any): any;
+
     // Returns the value of this cell's data. The data type should be a string, number, or IFormula
     getValue(): String | number | IFormulas;
 
@@ -48,5 +53,5 @@ export interface ICells {
 
     // Sets up for this cell to observe a cell at a given coordinate when that cell is referenced by
     // this cell 
-    cellReference(row: number, column: number): void;
+    cellReference(row: number, column: number): {refCell: ICells, observer: IObserver}
 }

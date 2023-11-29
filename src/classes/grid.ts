@@ -77,13 +77,15 @@ export class Grid {
 
     // Returns the list of list of cells in this Grid
     public getCells(): Array<Array<ICells>> {
-        return this.cells;
+        return [...this.cells];
     }
 
     // Finds a single cell within this Grid using the given row and column
     public getSingleCell(row: number, column: number): ICells {
         return this.cells[row][column];
     }
+
+
 
     // Saves the selected cell as a way to communicate between the UI and backend
     public selectCell(x: number, y: number): void {
@@ -98,15 +100,15 @@ export class Grid {
     // Initializes this Grid with the given number of rows and columns
     public initialize(rows: number, columns: number): void {
         let x = 0;
-        const initCells: ICells[][] = [];
+        let initCells: ICells[][] = [];
         Array.from({ length: columns }, () => {
             let y = 0;
             let initRow: ICells[] = [];
             Array.from({ length: rows }, () => {
-                initRow.push(new Cells("", x, y));
+                initRow = [...initRow, new Cells("", x, y)];
                 y++;
             });
-            initCells.push(initRow);
+            initCells = [...initCells, initRow];
             x++;
         })
         this.cells = initCells;

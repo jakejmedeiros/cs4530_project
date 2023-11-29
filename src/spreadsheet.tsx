@@ -3,6 +3,7 @@ import './spreadsheet.css';
 import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
 import { ICells } from './interfaces/cells.interface';
+import { ContextMenu } from './classes/reactComponents/contextMenu'
 
 interface ContextMenuState {
   x: number;
@@ -17,7 +18,23 @@ export default function Spreadsheet() {
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
   useEffect(() => {
-    grid.initialize(2, 10);
+    const closeMenu = () => setContextMenu(null);
+    document.addEventListener('click', closeMenu);
+    return () => document.removeEventListener('click', closeMenu);
+  }, []);
+
+  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>, rowIndex: number, columnIndex: number): void => {
+    event.preventDefault();
+    setContextMenu({
+      x: event.pageX,
+      y: event.pageY,
+      rowIndex,
+      columnIndex,
+    });
+  };
+
+  useEffect(() => {
+    grid.initialize(15, 15);
     setGridCells(grid.getCells());
   }, []);
 
@@ -46,8 +63,11 @@ export default function Spreadsheet() {
     setGridCells([...grid.getCells()])
   }
 
-
-  
+  const handleClearRow = (targetRow: number) => { 
+    grid.clearRow(targetRow);
+    
+    setGridCells([...grid.getCells()])
+  }
 
   return (
     <div>
@@ -55,6 +75,14 @@ export default function Spreadsheet() {
         <h1>CS4530 Spreadsheet Application</h1>
     </header>
       <div className='top-bar'>
+      {contextMenu && (
+      <ContextMenu
+        x={contextMenu.x}
+        y={contextMenu.y}
+        onClearRow={() => handleClearRow(contextMenu.rowIndex)}
+        onClearColumn={() => handleClearColumn(contextMenu.columnIndex)}
+      />
+    )}
         <div className='button-group'>
           <button onClick={handleAddRow} className="add-row-button">Add Row</button>
           <button onClick={() => handleRemoveRow(gridCells.length - 1)} className="remove-row-button">
@@ -73,33 +101,12 @@ export default function Spreadsheet() {
             {rowIdx + 1}
           </div>
           {row.map((cell, cellIdx) => (
-            <div key={`${rowIdx}-${cellIdx}`} className='cell-container'>
+            <div key={`${rowIdx}-${cellIdx}`} className='cell-container' onContextMenu={(e) => handleContextMenu(e, rowIdx, cellIdx)}>
               <CellBox cell={cell} />
             </div>
           ))}
         </div>
       ))}
     </div>
-  );
-};
-
-
-export function ContextMenu( x: number, y: number, onClearRow: (target: number) => void, onClearColumn: (target: number) => void) {
-  const menuStyle = {
-    position: 'absolute',
-    top: `${y}px`,
-    left: `${x}px`,
-    zIndex: 1000,
-    background: '#fff',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-  };
-
-  return (
-    <ul className="context-menu">
-      <li onClick={onClearRow}>Clear Row</li>
-      <li onClick={handleCl}>Clear Column</li>
-    </ul>
   );
 };

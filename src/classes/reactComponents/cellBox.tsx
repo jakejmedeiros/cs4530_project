@@ -48,9 +48,15 @@ export const CellBox: React.FC<cellProps> = (props: cellProps) => {
     const isCommand: boolean = Parser.referenceParse(cell, cellEditValue);
     if (!isCommand) {
       typeCheck();
+    } else {
+      handleFormula();
     }
     setCellEditValue((cell.getValue() ?? "").toString());
   };
+
+  const handleFormula = (): void => {
+    
+  }
 
   return (
     <div>

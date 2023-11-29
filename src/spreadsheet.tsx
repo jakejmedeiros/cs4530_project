@@ -3,8 +3,7 @@ import './spreadsheet.css';
 import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
 import { ICells } from './interfaces/cells.interface';
-import { ContextMenu } from './classes/reactComponents/contextMenu';
-import { ColumnNameTranslate } from './classes/utils/columnNameTranslate';
+import { ContextMenu } from './classes/reactComponents/contextMenu'
 
 interface ContextMenuState {
   x: number;
@@ -94,9 +93,6 @@ export default function Spreadsheet() {
           Remove Column
           </button>
         </div>
-      </div>
-      <div className='app-header'>
-        {[1,2,3,4,5,6,7]}
       </div>
       <div className='spreadsheet'></div>
       {gridCells.map((row, rowIdx) => (

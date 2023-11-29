@@ -18,8 +18,8 @@ export class Parser {
     private static getCellList(r1: number, c1: number, r2: number, c2: number, holdingCell: ICells): ICells[] {
         const grid = Grid.getInstance();
         const cellList: ICells[] = [];
-        for (let x = c1; x < c2+1; x++) {
-            for (let y = r1; y < r2+1; y++) {
+        for (let x = r1; x < r2+1; x++) {
+            for (let y = c1; y < c2+1; y++) {
                 const currentCell: ICells = grid.getSingleCell(x,y);
                 cellList.push(currentCell);
                 const o: IObserver = new CellObserver(holdingCell);
@@ -52,7 +52,7 @@ export class Parser {
                 const column: number = ColumnNameTranslate.columnName(parser.results[0].column) - 1;
                 const row: number = parser.results[0].row - 1;
                 const grid = Grid.getInstance();
-                const refCell: ICells = grid.getSingleCell(column, row);
+                const refCell: ICells = grid.getSingleCell(row, column);
                 let refVal = refCell.getValue();
                 let refAns: String | number = "";
                 if (refVal instanceof Sum || refVal instanceof Average) {
@@ -149,11 +149,11 @@ export class Parser {
         } else {
             commItem = this.commandCheck(command, cell);
             if (typeTracker !== "" && typeof commItem !== typeTracker) {
-            const err = new InvalidDataTypeError(cell);
-            return err.toText();
+                const err = new InvalidDataTypeError(cell);
+                return err.toText();
             } else {
-            typeTracker = typeof commItem;
-            commItem = commItem.toString();
+                typeTracker = typeof commItem;
+                commItem = commItem.toString();
             }
         }
             parsedList.push(commItem);

@@ -73,8 +73,6 @@ export class Grid {
         });
     }
 
-
-
     // Returns the list of list of cells in this Grid
     public getCells(): Array<Array<ICells>> {
         return [...this.cells];

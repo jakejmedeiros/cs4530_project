@@ -4,6 +4,7 @@ import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
 import { ICells } from './interfaces/cells.interface';
 import { ContextMenu } from './classes/reactComponents/contextMenu';
+import { ColumnNameTranslate } from './classes/utils/columnNameTranslate';
 
 interface ContextMenuState {
   x: number;
@@ -94,6 +95,9 @@ export default function Spreadsheet() {
           </button>
         </div>
       </div>
+      <div className='app-header'>
+        {[1,2,3,4,5,6,7]}
+      </div>
       <div className='spreadsheet'></div>
       {gridCells.map((row, rowIdx) => (
         <div key={rowIdx} className='row'>
@@ -102,7 +106,7 @@ export default function Spreadsheet() {
           </div>
           {row.map((cell, cellIdx) => (
             <div key={`${rowIdx}-${cellIdx}`} className='cell-container' onContextMenu={(e) => handleContextMenu(e, rowIdx, cellIdx)}>
-              <CellBox cell={cell} />
+              <CellBox initCell={cell} />
             </div>
           ))}
         </div>

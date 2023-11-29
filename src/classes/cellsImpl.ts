@@ -13,7 +13,7 @@ export class Cells implements ICells {
     private observers = new Array<IObserver>();
     private data: IData;
     private state: String;
-    private cellView: ((setCellEditValue: any) => {}) = () => {return 0};
+    private cellViewFunction: ((value: React.SetStateAction<string>) => void) = () => {return ""};
 
     public constructor(value: String | number | IFormulas,
     private x: number, private y: number) {
@@ -66,11 +66,11 @@ export class Cells implements ICells {
     // its value changed
     public updateCell(): void {
         Parser.runCellState(this);
-        this.cellView(this.getValue());
+        this.cellViewFunction((this.getValue() ?? "").toString());
     }
 
-    public setCellState(setCellEditValue: any): any {
-        this.cellView = setCellEditValue;
+    public setCellState(setCellEditValue: (value: React.SetStateAction<string>) => void): void {
+        this.cellViewFunction = setCellEditValue;
     }
 
     // Return the data type of this cell's data. It is an enum of 

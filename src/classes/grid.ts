@@ -22,16 +22,58 @@ export class Grid {
     }
 
     // Adds a row to the grid
-    public addRow(row: Array<ICells>) {
-        this.cells.push(row);
+    public addRow() {
+        const newRow: ICells[] = [];
+        const columns = this.cells[0].length;
+        for (let y = 0; y < columns; y++) {
+            newRow.push(new Cells("", this.cells.length, y));
+        }
+        this.cells.push(newRow);
     }
 
-    // Adds a column to the grid
-    public addColumn(column: Array<ICells>) {
-        this.cells.forEach((array, index) => {
-            array.push(column[index]);
+    public removeRow(index: number): void {
+        if (index >= 0 && index < this.cells.length) {
+            this.cells.splice(index,1);
+        } else {
+            throw new Error("Row index out of bounds.")
+        }
+    }
+
+    public addColumn() {
+        const newColumnIndex = this.cells[0].length; 
+        this.cells.forEach((row, rowIndex) => {
+          const newCell: ICells = new Cells("", newColumnIndex, rowIndex);
+          row.push(newCell); 
         });
     }
+
+    public removeColumn() {
+        this.cells.forEach((row, rowIndex) => {
+            row.pop();
+        });
+    }
+
+    public clearRow(targetIndex: number) {
+        this.cells.forEach((row, rowIndex) => {
+            row.forEach((column, columnIndex) => {
+                if (rowIndex == targetIndex) {
+                    this.cells[rowIndex][columnIndex] = new Cells("", columnIndex, rowIndex)
+                }
+            });
+        });
+    }
+
+    public clearColumn(targetIndex: number) {
+        this.cells.forEach((row, rowIndex) => {
+            row.forEach((column, columnIndex) => {
+                if (columnIndex == targetIndex) {
+                    this.cells[rowIndex][columnIndex] = new Cells("", columnIndex, rowIndex)
+                }
+            });
+        });
+    }
+
+
 
     // Returns the list of list of cells in this Grid
     public getCells(): Array<Array<ICells>> {

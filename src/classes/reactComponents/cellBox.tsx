@@ -20,7 +20,7 @@ export const CellBox: React.FC<CellProps> = ({ initCell }) => {
     Parser.runCellState(cell);
     setCellEditValue((cell.getValue() ?? "").toString());
   };
-
+        
   return (
     <div>
         <textarea className='cell'

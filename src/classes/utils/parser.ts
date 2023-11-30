@@ -13,7 +13,8 @@ import { InvalidInputError } from '../errorHandling/InvalidInputError';
 import { BadReferenceInFormula } from '../errorHandling/BadReferenceError';
 import { InvalidFormulaSyntax } from '../errorHandling/InvalidFormulaSyntax';
 
-// A class for util methods having to do with parsing
+// A class for util methods having to do with parsing. Should only call runCellState
+// outside of this class. The rest of the methods are helper methods for runCellState
 export class Parser {
 
     // Takes a given range in the form of a start row number, a start column number, an end row number, and an end column number
@@ -34,7 +35,7 @@ export class Parser {
   
     // Parses when a user inputs a reference to a cell. Returns true if the input is a REF, SUM, or AVERAGE command.
     // Returns false if the input is not a command
-    public static referenceParse(cell: ICells, input: String): {output: String | number, attaches: ICells[]} {
+    private static referenceParse(cell: ICells, input: String): {output: String | number, attaches: ICells[]} {
         type referenceSet = {
             output: String | number,
             attaches: ICells[]
@@ -185,7 +186,7 @@ export class Parser {
             return;
         }
         let newValue: String | number = '';
-        let commandList: String[] = state.trim().split(/(\+|\-|\*|\/|\^)/);
+        let commandList: String[] = state.split(/(\+|-|\*|\/|\^)/);
         commandList = commandList.filter(str => str !== "");
         const commListParenthesis: String[] = this.parseParenthesis(commandList);
         let parsedList: String[] = [];
@@ -228,11 +229,11 @@ export class Parser {
                 return;
             }
         } else if (typeTracker === 'string') {
-            const hasInvalidSymbol: boolean = parsedList.some((str) => {
-                const ans: boolean = !this.isStringInput(str) || str !== '+';
+            const hasValidSymbols: boolean = parsedList.some((str) => {
+                const ans: boolean = this.isStringInput(str) || str === '+';
                 return ans;
             });
-            if (hasInvalidSymbol) {
+            if (parsedList.length > 1 && !hasValidSymbols) {
                 const err: IErrorAlert = new InvalidDataTypeError(cell);
                 alert(err.toText());
                 cell.setData("");

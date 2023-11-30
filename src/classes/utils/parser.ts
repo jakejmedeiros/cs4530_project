@@ -9,8 +9,12 @@ import { IFormulas } from 'src/interfaces/formulas.interface';
 import { IErrorAlert } from 'src/interfaces/erroralert.interface';
 import { InvalidDataTypeError } from '../errorHandling/InvalidDataTypeError';
 import { create, all } from 'mathjs';
+import { InvalidInputError } from '../errorHandling/InvalidInputError';
+import { BadReferenceInFormula } from '../errorHandling/BadReferenceError';
+import { InvalidFormulaSyntax } from '../errorHandling/InvalidFormulaSyntax';
 
-// A class for util methods having to do with parsing
+// A class for util methods having to do with parsing. Should only call runCellState
+// outside of this class. The rest of the methods are helper methods for runCellState
 export class Parser {
 
     // Takes a given range in the form of a start row number, a start column number, an end row number, and an end column number
@@ -31,7 +35,7 @@ export class Parser {
   
     // Parses when a user inputs a reference to a cell. Returns true if the input is a REF, SUM, or AVERAGE command.
     // Returns false if the input is not a command
-    public static referenceParse(cell: ICells, input: String): {output: String | number, attaches: ICells[]} {
+    private static referenceParse(cell: ICells, input: String): {output: String | number, attaches: ICells[]} {
         type referenceSet = {
             output: String | number,
             attaches: ICells[]
@@ -108,10 +112,10 @@ export class Parser {
         let newInput: number | String | IErrorAlert = "";
         if (this.isStringInput(input)) {
             newInput = input.substring(1, input.length-1);
-        } else if (parseFloat(input)) {
-            newInput = parseFloat(input);
+        } else if (Number.isFinite(Number(input))) {
+            newInput = Number(input);
         } else {
-            const err: IErrorAlert = new InvalidDataTypeError(cell);
+            const err: IErrorAlert = new InvalidInputError(cell);
             newInput = err;
         }
         return newInput;
@@ -123,52 +127,128 @@ export class Parser {
         //commandReferences is the list of cells to attach an observer to
         const commandReferences: {output: String | number, attaches: ICells[]} = this.referenceParse(cell, command);
         if (commandReferences.attaches.length === 0) {
-          input = this.typeCheck(command, cell);
+            input = this.typeCheck(command, cell);
         } else {
-          input = commandReferences.output;
-          const attaches = commandReferences.attaches;
-          attaches.forEach(observedCell => {
-            const obs: IObserver = new CellObserver(cell);
-            observedCell.attach(obs);
-          });
+            input = commandReferences.output;
+            if (Number.isNaN(input)) {
+                const err: IErrorAlert = new BadReferenceInFormula(cell);
+                return err;
+            }
+            const attaches = commandReferences.attaches;
+            const watched: ICells[] = cell.getCellsObserved().concat(attaches);
+            cell.setCellsObserved(watched);
+            attaches.forEach(observedCell => {
+                const obs: IObserver = new CellObserver(cell);
+                observedCell.attach(obs);
+            });
         }
         return input;
       }
 
+    // Does a second round of parsing to separate parentheses when not a part of a reference, sum, or average
+    // command
+    private static parseParenthesis = (commandList: String[]) => {
+        let newCommandList: String[] = [];
+        let secondCommandList: String[] = [];
+        let finalCommandList: String[] = [];
+        commandList.forEach((command) => {
+            const refSplit: String[] = command.split(/[A-Z]{3}\([A-Z]+\d+\)/);
+            newCommandList = newCommandList.concat(refSplit);
+        });
+        newCommandList.forEach((command) => {
+            const formulaSplit: String[] = command.split(/[A-Z]{3}\([A-Z]+\d+\.\.[A-Z]+\d+\)/);
+            secondCommandList = secondCommandList.concat(formulaSplit);
+        });
+        secondCommandList.forEach((command) => {
+            let start: number = 0;
+            if (command.charAt(0) === '(') {
+                finalCommandList = finalCommandList.concat('(');
+                start = 1;
+            }
+            if (command.charAt(command.length-1) === ')'
+                && (command.substring(0, command.length-1).match(/\([a-z]+\d+\)/gi)
+                    || command.substring(0, command.length-1).match(/\([a-z]+\d+\.\.[a-z]+\d+\)/gi)
+                    || parseFloat(command.substring(0, command.length-1)))) {
+                finalCommandList = finalCommandList.concat(command.substring(start, command.length-1));   
+                finalCommandList = finalCommandList.concat(')');
+            } else {
+                finalCommandList = finalCommandList.concat(command.substring(start));
+            }
+        });
+        finalCommandList = finalCommandList.map((symbol) => symbol.trim());
+        return finalCommandList;
+    }
+
     // Runs the given state of a cell
     public static runCellState(cell: ICells): void {
         const state: String = cell.getState();
+        if (state === '') {
+            cell.setData('');
+            return;
+        }
         let newValue: String | number = '';
-        const commandList: String[] = state.split(/(\+|-|\*|\/|\^)/);
+        let commandList: String[] = state.split(/(\s*\+|-|\*|\/|\^\s*)/);
+        commandList = commandList.filter(str => str !== "");
+        const commListParenthesis: String[] = this.parseParenthesis(commandList);
         let parsedList: String[] = [];
         let typeTracker: String = "";
-        commandList.forEach(command => {
-        let commItem: String | number | IErrorAlert = "";
-        if (command === '+' || command === '-' || command === '*' || command === '/' || command === '^') {
-            commItem = command;
-        } else {
-            commItem = this.commandCheck(command, cell);
-            if (typeTracker !== "" && typeof commItem !== typeTracker) {
-                const err = new InvalidDataTypeError(cell);
-                return err.toText();
+        for (let command of commListParenthesis) {
+            let commItem: String | number | IErrorAlert = "";
+            if (command === '+' || command === '-' || command === '*'
+                || command === '/' || command === '^' 
+                || command === '(' || command === ')') {
+                commItem = command;
             } else {
-                typeTracker = typeof commItem;
-                commItem = commItem.toString();
+                commItem = this.commandCheck(command, cell);
+                if (typeTracker !== "" && typeof commItem !== typeTracker) {
+                    const err = new InvalidDataTypeError(cell);
+                    typeTracker = err.toText();
+                    break;
+                } else if (commItem instanceof InvalidInputError
+                    || commItem instanceof BadReferenceInFormula) {
+                    typeTracker = commItem.toText();
+                    break;
+                } else {
+                    typeTracker = typeof commItem;
+                    commItem = commItem.toString();
+                }
             }
-        }
             parsedList.push(commItem);
-        });
+        };
         if (typeTracker === 'number') {
             newValue = parsedList.join('');
-            // from mathjs package
-            const math = create(all);
-            const result: number = math.evaluate(newValue as string);
-            cell.setData(result);
+            try{
+                // from mathjs package
+                const math = create(all);
+                const result: number = math.evaluate(newValue as string);
+                cell.setData(result);
+            } catch {
+                const err: IErrorAlert = new InvalidFormulaSyntax(cell);
+                alert(err.toText());
+                cell.setData("");
+                cell.setState("");
+                return;
+            }
         } else if (typeTracker === 'string') {
+            const hasValidSymbols: boolean = parsedList.some((str) => {
+                const ans: boolean = this.isStringInput(str) || str === '+';
+                return ans;
+            });
+            if (parsedList.length > 1 && !hasValidSymbols) {
+                const err: IErrorAlert = new InvalidDataTypeError(cell);
+                alert(err.toText());
+                cell.setData("");
+                cell.setState("");
+                return;
+            }
             parsedList = parsedList.filter((str) => str !== "+");
             newValue = parsedList.join('');
             cell.setData(newValue.toString());
-        };
+        } else {
+            alert(typeTracker);
+            cell.setData("");
+            cell.setState("");
+        }
     }
 }
 

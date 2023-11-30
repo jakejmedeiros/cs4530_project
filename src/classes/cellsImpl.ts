@@ -14,6 +14,7 @@ export class Cells implements ICells {
     private data: IData;
     private state: String;
     private cellViewFunction: ((value: React.SetStateAction<string>) => void) = () => {return ""};
+    private cellsObserved: ICells[] = [];
 
     public constructor(value: String | number | IFormulas,
     private x: number, private y: number) {
@@ -27,14 +28,16 @@ export class Cells implements ICells {
             return (obs.getCell().getX() === o.getCell().getX())
             && (obs.getCell().getY() === o.getCell().getY());
         };
-        if(!this.observers.some(sameObserver)) { 
-            this.observers = [...this.observers, o];
+        if(!this.observers.some(sameObserver)) {
+            this.observers.push(o);
         }
     }
 
     // Removes the given observer from this cell's list of observers
     public detach(o: IObserver): void {
-        const newObs: IObserver[] = this.observers.filter(obs => (obs.getCell().getX() !== o.getCell().getX()) && (obs.getCell().getY() !== o.getCell().getY()));
+        const newObs: IObserver[] = this.observers.filter(obs => 
+            (obs.getCell().getX() !== o.getCell().getX()) 
+            && (obs.getCell().getY() !== o.getCell().getY()));
         this.observers = newObs;
     }
 
@@ -71,6 +74,7 @@ export class Cells implements ICells {
         grid.setCellInGrid(this.x, this.y, this);
     }
 
+    // Set this cell's cellViewFunction so the corresponding cellBox can be updated visually
     public setCellState(setCellEditValue: (value: React.SetStateAction<string>) => void): void {
         this.cellViewFunction = setCellEditValue;
     }
@@ -119,5 +123,15 @@ export class Cells implements ICells {
             refCell,
             observer
         }
+    }
+
+    // Sets the list of cells that this cell is observing through reference and/or sum/average
+    public setCellsObserved(cells: ICells[]): void {
+        this.cellsObserved = cells;
+    }
+
+    // Returns the list of cells that this cell is observing through reference and/or sum/average
+    public getCellsObserved(): ICells[] {
+        return this.cellsObserved;
     }
 };

@@ -54,4 +54,10 @@ export interface ICells {
     // Sets up for this cell to observe a cell at a given coordinate when that cell is referenced by
     // this cell 
     cellReference(row: number, column: number): {refCell: ICells, observer: IObserver}
+
+    // Sets the list of cells that this cell is observing through reference and/or sum/average
+    setCellsObserved(cells: ICells[]): void;
+
+    // Returns the list of cells that this cell is observing through reference and/or sum/average
+    getCellsObserved(): ICells[]
 }

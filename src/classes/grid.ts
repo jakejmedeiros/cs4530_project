@@ -1,6 +1,8 @@
+import { IObserver } from "src/interfaces/observer.interface";
 import Papa from "papaparse";
 import { Cells } from "./cellsImpl";
 import { ICells } from "src/interfaces/cells.interface";
+import { CellObserver } from "./cellObserver";
 
 // Class for creating the grid of cells for the spreadsheet. Cells[x][y] where x is the row and y is the column
 // The Grid class is an implementation of the Singletone design pattern
@@ -57,10 +59,11 @@ export class Grid {
     public clearRow(targetIndex: number) {
         this.cells.forEach((row, rowIndex) => {
             row.forEach((column, columnIndex) => {
-                if (rowIndex == targetIndex) {
+                if (rowIndex === targetIndex) {
                     this.cells[rowIndex][columnIndex].setState("");
                     this.cells[rowIndex][columnIndex].setData("");
                     this.cells[rowIndex][columnIndex].updateCell();
+                    this.detachCellFromObserved(this.cells[rowIndex][columnIndex]);
                 }
             });
         });
@@ -73,12 +76,11 @@ export class Grid {
                     this.cells[rowIndex][columnIndex].setState("");
                     this.cells[rowIndex][columnIndex].setData("");
                     this.cells[rowIndex][columnIndex].updateCell();
+                    this.detachCellFromObserved(this.cells[rowIndex][columnIndex]);
                 }
             });
         });
     }
-
-
 
     // Returns the list of list of cells in this Grid
     public getCells(): ICells[][] {
@@ -117,11 +119,23 @@ export class Grid {
         this.cells = initCells;
     }
 
-    public setCellInGrid = (row: number, column: number, cell: ICells): void => {
+    // Sets the given cell into this grid by the given coordinates
+    public setCellInGrid(row: number, column: number, cell: ICells): void {
         this.cells[row][column] = cell;
     }
 
-
+    // Detaches observers of the cell connected to this cellbox for the cells being observed by this cell
+    public detachCellFromObserved(cell: ICells):void {
+        const watchedCells: ICells[] = cell.getCellsObserved();
+        watchedCells.forEach((c) => {
+            const x: number = c.getX();
+            const y: number = c.getY();
+            const removeObsCell: ICells = this.getSingleCell(x,y);
+            const obs: IObserver = new CellObserver(cell);
+            removeObsCell.detach(obs);
+        });
+        cell.setCellsObserved([]);
+    }
 
     //Save the entire grid into a .csv file
     public saveToCSV(): void {

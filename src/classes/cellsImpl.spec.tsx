@@ -7,6 +7,7 @@ import { DataType } from 'src/enums/datatype';
 import { Grid } from './grid';
 import { Sum } from './formulas/sum';
 import { IFormulas } from 'src/interfaces/formulas.interface';
+import { Average } from './formulas/average';
 
 // Tests for methods in the Cells class
 describe('Cells', () => {
@@ -199,6 +200,12 @@ describe('Cells', () => {
       expect(cell1.getValue()).toEqual(34);
     });
 
+    it("cell1's value should return 34", () => {
+      const cell1: ICells = new Cells(34, 2, 5);
+
+      expect(cell1.getValue()).toEqual(34);
+    });
+
     it("cell1's value should return a Sum class", () => {
       const cell1: ICells = new Cells(0, 2, 5);
 
@@ -216,6 +223,25 @@ describe('Cells', () => {
       cell1.setData(sum);
 
       expect(cell1.getValue() instanceof Sum).toEqual(true);
+    });
+
+    it("cell1's value should return an Average class", () => {
+      const cell1: ICells = new Cells(0, 2, 5);
+
+      const cell2: ICells = new Cells(2, 2, 5);
+      const cell3: ICells = new Cells(3, 2, 6);
+      const cell4: ICells = new Cells(5, 2, 7);
+      const cell5: ICells = new Cells(10, 3, 5);
+      const cell6: ICells = new Cells(6, 3, 6);
+      const cell7: ICells = new Cells(-4, 3, 7);
+
+      const cellRange: ICells[] = [cell2, cell3, cell4, cell5, cell6, cell7];
+
+      const avg: IFormulas = new Average(cell1, cellRange);
+
+      cell1.setData(avg);
+
+      expect(cell1.getValue() instanceof Average).toEqual(true);
     });
   });
 });

@@ -14,9 +14,7 @@ export class InvalidDataTypeError implements IErrorAlert {
     // Translates this InvalidDataTypeError into text.
     toText():String {
         return "Invalid Data Type Error: The cell at (" 
-        + ColumnNameTranslate.columnToLetter(this.errorCell.getX())
-        + ","
-        + this.errorCell.getY()
-        + ") contains an invalid data type."
+        + ColumnNameTranslate.columnToLetter(this.errorCell.getY()+1) + (this.errorCell.getX()+1)
+        + ") contains invalid data types. You may only add strings with other strings and do arithmetic operations with numbers."
     }
 }

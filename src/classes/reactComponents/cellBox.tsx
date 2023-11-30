@@ -14,11 +14,12 @@ export const CellBox: React.FC<CellProps> = ({ initCell }) => {
   const [cellEditValue, setCellEditValue] = useState((cell.getValue() ?? "").toString());
   const grid = Grid.getInstance();
 
+  cell.setCellState(setCellEditValue);
+
   // Handles when the user enters an input into a cell and either presses the enter/return key or clicks outside of this cell.
   // Checks if user inputted a formula, reference, or literal value
   const handleEnterPress = (): void => {
     cell.setState(cellEditValue);
-    cell.setCellState(setCellEditValue)
     Parser.runCellState(cell);
     setCellEditValue((cell.getValue() ?? "").toString());
     const x: number = cell.getX();
@@ -40,7 +41,7 @@ export const CellBox: React.FC<CellProps> = ({ initCell }) => {
           onChange={(e) => {
             setCellEditValue(e.target.value);
           }}
-          onClick={(e) => {
+          onFocus={(e) => {
             setCellEditValue((cell.getState() ?? "").toString());
           }}
           onBlur={(e) => {

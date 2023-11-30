@@ -34,7 +34,9 @@ export class Cells implements ICells {
 
     // Removes the given observer from this cell's list of observers
     public detach(o: IObserver): void {
-        const newObs: IObserver[] = this.observers.filter(obs => (obs.getCell().getX() !== o.getCell().getX()) && (obs.getCell().getY() !== o.getCell().getY()));
+        const newObs: IObserver[] = this.observers.filter(obs => 
+            (obs.getCell().getX() !== o.getCell().getX()) 
+            && (obs.getCell().getY() !== o.getCell().getY()));
         this.observers = newObs;
     }
 

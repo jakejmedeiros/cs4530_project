@@ -135,27 +135,65 @@ export class Parser {
         return input;
       }
 
+    // Does a second round of parsing to separate parentheses when not a part of a reference, sum, or average
+    // command
+    private static parseParenthesis = (commandList: String[]) => {
+        let newCommandList: String[] = [];
+        let secondCommandList: String[] = [];
+        let finalCommandList: String[] = [];
+        commandList.map((command) => {
+            const refSplit: String[] = command.split(/[A-Z]{3}\([A-Z]+\d+\)/);
+            newCommandList = newCommandList.concat(refSplit);
+        });
+        newCommandList.map((command) => {
+            const formulaSplit: String[] = command.split(/[A-Z]{3}\([A-Z]+\d+\.\.[A-Z]+\d+\)/);
+            secondCommandList = secondCommandList.concat(formulaSplit);
+        });
+        secondCommandList.map((command) => {
+            let start: number = 0;
+            if (command.charAt(0) === '(') {
+                finalCommandList = finalCommandList.concat('(');
+                start = 1;
+            }
+            if (command.charAt(command.length-1) === ')'
+                && (command.substring(0, command.length-1).match(/\([a-z]+\d+\)/gi)
+                    || command.substring(0, command.length-1).match(/\([a-z]+\d+\.\.[a-z]+\d+\)/gi)
+                    || parseFloat(command.substring(0, command.length-1)))) {
+                finalCommandList = finalCommandList.concat(command.substring(start, command.length-1));   
+                finalCommandList = finalCommandList.concat(')');
+            } else {
+                finalCommandList = finalCommandList.concat(command.substring(start));
+            }
+        });
+        return finalCommandList;
+    }
+
     // Runs the given state of a cell
     public static runCellState(cell: ICells): void {
         const state: String = cell.getState();
+        if (state === '') {
+            cell.setData('');
+            return;
+        }
         let newValue: String | number = '';
         const commandList: String[] = state.split(/(\+|-|\*|\/|\^)/);
+        const commListParenthesis: String[] = this.parseParenthesis(commandList);
         let parsedList: String[] = [];
         let typeTracker: String = "";
-        commandList.forEach(command => {
-        let commItem: String | number | IErrorAlert = "";
-        if (command === '+' || command === '-' || command === '*' || command === '/' || command === '^') {
-            commItem = command;
-        } else {
-            commItem = this.commandCheck(command, cell);
-            if (typeTracker !== "" && typeof commItem !== typeTracker) {
-                const err = new InvalidDataTypeError(cell);
-                return err.toText();
+        commListParenthesis.forEach(command => {
+            let commItem: String | number | IErrorAlert = "";
+            if (command === '+' || command === '-' || command === '*' || command === '/' || command === '(' || command === ')') {
+                commItem = command;
             } else {
-                typeTracker = typeof commItem;
-                commItem = commItem.toString();
+                commItem = this.commandCheck(command, cell);
+                if (typeTracker !== "" && typeof commItem !== typeTracker) {
+                    const err = new InvalidDataTypeError(cell);
+                    return err.toText();
+                } else {
+                    typeTracker = typeof commItem;
+                    commItem = commItem.toString();
+                }
             }
-        }
             parsedList.push(commItem);
         });
         if (typeTracker === 'number') {

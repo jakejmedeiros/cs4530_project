@@ -182,7 +182,9 @@ export class Parser {
         let typeTracker: String = "";
         commListParenthesis.forEach(command => {
             let commItem: String | number | IErrorAlert = "";
-            if (command === '+' || command === '-' || command === '*' || command === '/' || command === '(' || command === ')') {
+            if (command === '+' || command === '-' || command === '*'
+                || command === '/' || command === '^' 
+                || command === '(' || command === ')') {
                 commItem = command;
             } else {
                 commItem = this.commandCheck(command, cell);

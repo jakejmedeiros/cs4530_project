@@ -29,7 +29,6 @@ export const CellBox: React.FC<CellProps> = ({ initCell }) => {
     const x: number = cell.getX();
     const y: number = cell.getY();
     grid.setCellInGrid(x, y, cell);
-    console.log(grid);
   };
         
   return (

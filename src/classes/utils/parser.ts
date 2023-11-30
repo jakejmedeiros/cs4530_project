@@ -175,6 +175,7 @@ export class Parser {
                 finalCommandList = finalCommandList.concat(command.substring(start));
             }
         });
+        finalCommandList = finalCommandList.map((symbol) => symbol.trim());
         return finalCommandList;
     }
 
@@ -186,7 +187,7 @@ export class Parser {
             return;
         }
         let newValue: String | number = '';
-        let commandList: String[] = state.split(/(\+|-|\*|\/|\^)/);
+        let commandList: String[] = state.split(/(\s*\+|-|\*|\/|\^\s*)/);
         commandList = commandList.filter(str => str !== "");
         const commListParenthesis: String[] = this.parseParenthesis(commandList);
         let parsedList: String[] = [];

@@ -60,12 +60,11 @@ export default function Spreadsheet() {
 
   const handleClearColumn = (targetColumn: number) => {
     grid.clearColumn(targetColumn);
-    setGridCells([...grid.getCells()])
+    setGridCells([...grid.getCells()]);
   }
 
   const handleClearRow = (targetRow: number) => { 
     grid.clearRow(targetRow);
-    
     setGridCells([...grid.getCells()])
   }
 

@@ -67,6 +67,8 @@ export class Cells implements ICells {
     public updateCell(): void {
         Parser.runCellState(this);
         this.cellViewFunction((this.getValue() ?? "").toString());
+        const grid = Grid.getInstance();
+        grid.setCellInGrid(this.x, this.y, this);
     }
 
     public setCellState(setCellEditValue: (value: React.SetStateAction<string>) => void): void {

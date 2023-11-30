@@ -115,4 +115,8 @@ export class Grid {
         })
         this.cells = initCells;
     }
+
+    public setCellInGrid = (row: number, column: number, cell: ICells): void => {
+        this.cells[row][column] = cell;
+      }
 }

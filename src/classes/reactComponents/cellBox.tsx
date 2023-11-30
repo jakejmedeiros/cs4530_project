@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react'
 import { ICells } from '../../interfaces/cells.interface';
 import './cellBox.style.css'
 import { Parser } from '../utils/parser';
+import { Grid } from '../grid';
 
 interface CellProps {
   initCell: ICells;
@@ -11,6 +12,7 @@ interface CellProps {
 export const CellBox: React.FC<CellProps> = ({ initCell }) => {
   const [cell, setCell] = useState(initCell);
   const [cellEditValue, setCellEditValue] = useState((cell.getValue() ?? "").toString());
+  const grid = Grid.getInstance();
 
   // Handles when the user enters an input into a cell and either presses the enter/return key or clicks outside of this cell.
   // Checks if user inputted a formula, reference, or literal value
@@ -19,6 +21,9 @@ export const CellBox: React.FC<CellProps> = ({ initCell }) => {
     cell.setCellState(setCellEditValue)
     Parser.runCellState(cell);
     setCellEditValue((cell.getValue() ?? "").toString());
+    const x: number = cell.getX();
+    const y: number = cell.getY();
+    grid.setCellInGrid(x, y, cell);
   };
         
   return (

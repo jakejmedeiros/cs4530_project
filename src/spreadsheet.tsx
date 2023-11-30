@@ -96,6 +96,26 @@ export default function Spreadsheet() {
       }
     })();
   };
+
+  const handleSortRowAsc = (targetRow: number) => {
+     grid.sortRowAsc(targetRow);
+     setGridCells([...grid.getCells()])
+  }
+
+  const handleSortRowDesc = (targetRow: number) => {
+    grid.sortRowDesc(targetRow);
+    setGridCells([...grid.getCells()]);
+  }
+
+  const handleSortColAsc = (targetCol: number) => {
+    grid.sortColumnAsc(targetCol);
+    setGridCells([...grid.getCells()])
+  }
+
+  const handleSortColDesc = (targetCol: number) => {
+    grid.sortColumnDesc(targetCol);
+    setGridCells([...grid.getCells()])
+  }
     
     const getColumnHeaders = () => {
       const cells = grid.getCells();
@@ -119,6 +139,10 @@ export default function Spreadsheet() {
         y={contextMenu.y}
         onClearRow={() => handleClearRow(contextMenu.rowIndex)}
         onClearColumn={() => handleClearColumn(contextMenu.columnIndex)}
+        onSortRowAsc={() => handleSortRowAsc(contextMenu.rowIndex)}
+        onSortRowDsc={() => handleSortRowDesc(contextMenu.rowIndex)}
+        onSortColAsc={() => handleSortColAsc(contextMenu.columnIndex)}
+        onSortColDsc={() => handleSortColDesc(contextMenu.columnIndex)}
       />
     )}
         <div className='button-group'>
@@ -133,7 +157,7 @@ export default function Spreadsheet() {
           <button onClick={() => downloadCsv()} className="download-csv-button">
           Download CSV
           </button>
-          <input type='file' accept='.csv' onChange={handleLoadCsv} />
+          <input type='file' accept='.csv' className="upload-csv-button" onChange={handleLoadCsv} />
         </div>
       </div>
      {/* Render Column Headers */}
@@ -143,14 +167,14 @@ export default function Spreadsheet() {
           <div key={index} className='header-cell'>{header}</div>
         ))}
       </div>
- {/* Render Rows and Cells */}
-    {gridCells.map((row, rowIdx) => (
-    <div key={rowIdx} className='row'>
-      <div className='row-header'>{rowIdx + 1}</div> {/* Row Number */}
-      {row.map((cell, cellIdx) => (
-      <div key={`${rowIdx}-${cellIdx}`} className='cell-container' onContextMenu={(e) => handleContextMenu(e, rowIdx, cellIdx)}>
-      <CellBox initCell={cell} />
-    </div>
+      {/* Render Rows and Cells */}
+      {gridCells.map((row, rowIdx) => (
+        <div key={rowIdx} className='row'>
+          <div className='row-header'>{rowIdx + 1}</div> {/* Row Number */}
+          {row.map((cell, cellIdx) => (
+          <div key={`${rowIdx}-${cellIdx}`} className='cell-container' onContextMenu={(e) => handleContextMenu(e, rowIdx, cellIdx)}>
+        <CellBox initCell={cell} />
+      </div>
      ))}
  </div>
  ))}

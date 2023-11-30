@@ -4,6 +4,7 @@ import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
 import { ICells } from './interfaces/cells.interface';
 import { ContextMenu } from './classes/reactComponents/contextMenu'
+import { ColumnNameTranslate } from './classes/utils/columnNameTranslate';
 
 interface ContextMenuState {
   x: number;
@@ -95,27 +96,15 @@ export default function Spreadsheet() {
       }
     })();
   };
-
-  const toColumnName = (columnNumber: number): string => {
-    let columnName = '';
-    let dividend = columnNumber + 1;
-    
-    while (dividend > 0) {
-    let modulo = (dividend - 1) % 26;
-    columnName = String.fromCharCode(65 + modulo) + columnName;
-    dividend = Math.floor((dividend - modulo) / 26);
-    }
-    return columnName;
-    };
     
     const getColumnHeaders = () => {
-    const cells = grid.getCells();
-    if (cells.length === 0 || cells[0].length === 0) {
-    return []; // Return an empty array if there are no rows or columns
-    }
+      const cells = grid.getCells();
+      if (cells.length === 0 || cells[0].length === 0) {
+        return []; // Return an empty array if there are no rows or columns
+      }
     
-    const columns = cells[0].length; // Number of elements in the first row
-    return Array.from({ length: columns }, (_, index) => toColumnName(index));
+      const columns = cells[0].length; // Number of elements in the first row
+      return Array.from({ length: columns }, (_, index) => ColumnNameTranslate.columnToLetter(index));
     };
 
   return (

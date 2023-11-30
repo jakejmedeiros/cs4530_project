@@ -7,10 +7,6 @@ export class BadReferenceInFormula implements IErrorAlert {
 
     public constructor(private errorCell: ICells) {}
 
-    report():any {
-        throw new Error("Method not implemented.");
-    }
-
     // Translates this BadReferenceFormula into text
     toText():String {
         return "Bad Reference in Formula Error: The cell at (" 

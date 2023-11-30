@@ -76,7 +76,7 @@ export class Parser {
                 const c2: number = ColumnNameTranslate.columnName(parser.results[0].endColumn) - 1;
                 const r2: number = parser.results[0].endRow - 1;
                 const cellRange: ICells[] = this.getCellList(r1, c1, r2, c2, cell);
-                const cellSum: IFormulas = new Sum(cell, cellRange);
+                const cellSum: IFormulas = new Sum(cellRange);
                 ref.output = cellSum.getCalculation();
                 ref.attaches = cellRange;
             } else if (method === "AVG") {
@@ -89,7 +89,7 @@ export class Parser {
                 const c2: number = ColumnNameTranslate.columnName(parser.results[0].endColumn) - 1;
                 const r2: number = parser.results[0].endRow - 1;
                 const cellRange: ICells[] = this.getCellList(r1, c1, r2, c2, cell);
-                const cellAvg: IFormulas = new Average(cell, cellRange);
+                const cellAvg: IFormulas = new Average(cellRange);
                 ref.output = cellAvg.getCalculation();
                 ref.attaches = cellRange;
             }

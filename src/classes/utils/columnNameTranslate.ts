@@ -14,16 +14,15 @@ export class ColumnNameTranslate {
       }
 
     // Translates a number to a column letter
-    public static columnToLetter = (column: number): String => {
-        let letter = '';
-        const start = 'A'.charCodeAt(0) - 1;
-    
-        while (column > 0) {
-          const remainder = (column) % 26;
-          letter = String.fromCharCode(start + remainder) + letter;
-          column = Math.floor((column) / 26);
-        }
-    
-        return letter;
+    public static columnToLetter = (columnNumber: number): string => {
+      let columnName = '';
+      let dividend = columnNumber + 1;
+      
+      while (dividend > 0) {
+        let modulo = (dividend - 1) % 26;
+        columnName = String.fromCharCode(65 + modulo) + columnName;
+        dividend = Math.floor((dividend - modulo) / 26);
       }
+        return columnName;
+    };
 }

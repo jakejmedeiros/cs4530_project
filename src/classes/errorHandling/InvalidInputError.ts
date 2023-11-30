@@ -7,10 +7,6 @@ import { ColumnNameTranslate } from "../utils/columnNameTranslate";
 export class InvalidInputError implements IErrorAlert {
     public constructor(private errorCell: ICells) {}
 
-    report():any {
-        throw new Error("Method not implemented.");
-    }
-
     // Translates this InvalidInputError into text.
     toText():String {
         return "Invalid Input Error: The cell at (" 

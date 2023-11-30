@@ -9,7 +9,4 @@ export interface IFormulas {
 
     // Returns the current value of the calculation of this IFormulas's list of cells
     getCalculation(): number;
-
-    // Returns the list of references this IFormulas uses to calculate
-    getReferences(): ICells[];
 }

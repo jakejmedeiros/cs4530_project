@@ -218,7 +218,7 @@ describe('Cells', () => {
 
       const cellRange: ICells[] = [cell2, cell3, cell4, cell5, cell6, cell7];
 
-      const sum: IFormulas = new Sum(cell1, cellRange);
+      const sum: IFormulas = new Sum(cellRange);
 
       cell1.setData(sum);
 
@@ -237,7 +237,7 @@ describe('Cells', () => {
 
       const cellRange: ICells[] = [cell2, cell3, cell4, cell5, cell6, cell7];
 
-      const avg: IFormulas = new Average(cell1, cellRange);
+      const avg: IFormulas = new Average(cellRange);
 
       cell1.setData(avg);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import './spreadsheet.css';
 import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
@@ -48,6 +48,10 @@ export default function Spreadsheet() {
     setGridCells([...grid.getCells()]); 
   };
 
+  const downloadCsv = () => {
+    grid.saveToCSV();
+  }
+
   const handleAddColumn = () => {
     grid.addColumn();
     setGridCells([...grid.getCells()]); 
@@ -67,6 +71,52 @@ export default function Spreadsheet() {
     grid.clearRow(targetRow);
     setGridCells([...grid.getCells()])
   }
+
+  const handleLoadCsv = (event: React.ChangeEvent<HTMLInputElement>) => {
+    grid.initialize(15, 15);
+    setGridCells(grid.getCells());
+    const reader = new FileReader();
+    const file = event.target.files?.[0];
+    (async () => {
+      let newGrid: ICells[][] = [];
+
+      if (file) {
+
+        const loadFile = () => {
+          reader.onload = function (e) {
+            const csvString = e.target?.result as string;
+            grid.loadFromCSVString(csvString, setGridCells);
+            newGrid = grid.getCells();
+          };
+        }
+        await loadFile();
+        await setGridCells(newGrid);
+        reader.readAsText(file);
+      }
+    })();
+  };
+
+  const toColumnName = (columnNumber: number): string => {
+    let columnName = '';
+    let dividend = columnNumber + 1;
+    
+    while (dividend > 0) {
+    let modulo = (dividend - 1) % 26;
+    columnName = String.fromCharCode(65 + modulo) + columnName;
+    dividend = Math.floor((dividend - modulo) / 26);
+    }
+    return columnName;
+    };
+    
+    const getColumnHeaders = () => {
+    const cells = grid.getCells();
+    if (cells.length === 0 || cells[0].length === 0) {
+    return []; // Return an empty array if there are no rows or columns
+    }
+    
+    const columns = cells[0].length; // Number of elements in the first row
+    return Array.from({ length: columns }, (_, index) => toColumnName(index));
+    };
 
   return (
     <div>
@@ -91,21 +141,30 @@ export default function Spreadsheet() {
           <button onClick={() => handleRemoveColumn()} className="remove-column-button">
           Remove Column
           </button>
+          <button onClick={() => downloadCsv()} className="download-csv-button">
+          Download CSV
+          </button>
+          <input type='file' accept='.csv' onChange={handleLoadCsv} />
         </div>
       </div>
-      <div className='spreadsheet'></div>
-      {gridCells.map((row, rowIdx) => (
-        <div key={rowIdx} className='row'>
-          <div className='row-header'>
-            {rowIdx + 1}
-          </div>
-          {row.map((cell, cellIdx) => (
-            <div key={`${rowIdx}-${cellIdx}`} className='cell-container' onContextMenu={(e) => handleContextMenu(e, rowIdx, cellIdx)}>
-              <CellBox key={`${rowIdx}-${cellIdx}`} initCell={cell} />
-            </div>
-          ))}
-        </div>
-      ))}
+     {/* Render Column Headers */}
+     <div className='row'>
+        <div className='row-header'></div> {/* Empty cell for row header corner */}
+        {getColumnHeaders().map((header, index) => (
+          <div key={index} className='header-cell'>{header}</div>
+        ))}
+      </div>
+ {/* Render Rows and Cells */}
+    {gridCells.map((row, rowIdx) => (
+    <div key={rowIdx} className='row'>
+      <div className='row-header'>{rowIdx + 1}</div> {/* Row Number */}
+      {row.map((cell, cellIdx) => (
+      <div key={`${rowIdx}-${cellIdx}`} className='cell-container' onContextMenu={(e) => handleContextMenu(e, rowIdx, cellIdx)}>
+      <CellBox initCell={cell} />
+    </div>
+     ))}
+ </div>
+ ))}
     </div>
   );
 };

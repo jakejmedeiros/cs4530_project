@@ -68,6 +68,28 @@ export default function Spreadsheet() {
     setGridCells([...grid.getCells()])
   }
 
+  const toColumnName = (columnNumber: number): string => {
+    let columnName = '';
+    let dividend = columnNumber + 1;
+    
+    while (dividend > 0) {
+    let modulo = (dividend - 1) % 26;
+    columnName = String.fromCharCode(65 + modulo) + columnName;
+    dividend = Math.floor((dividend - modulo) / 26);
+    }
+    return columnName;
+    };
+    
+    const getColumnHeaders = () => {
+    const cells = grid.getCells();
+    if (cells.length === 0 || cells[0].length === 0) {
+    return []; // Return an empty array if there are no rows or columns
+    }
+    
+    const columns = cells[0].length; // Number of elements in the first row
+    return Array.from({ length: columns }, (_, index) => toColumnName(index));
+    };
+
   return (
     <div>
       <header className='app-header'>
@@ -93,19 +115,24 @@ export default function Spreadsheet() {
           </button>
         </div>
       </div>
-      <div className='spreadsheet'></div>
-      {gridCells.map((row, rowIdx) => (
-        <div key={rowIdx} className='row'>
-          <div className='row-header'>
-            {rowIdx + 1}
-          </div>
-          {row.map((cell, cellIdx) => (
-            <div key={`${rowIdx}-${cellIdx}`} className='cell-container' onContextMenu={(e) => handleContextMenu(e, rowIdx, cellIdx)}>
-              <CellBox initCell={cell} />
-            </div>
-          ))}
-        </div>
-      ))}
+     {/* Render Column Headers */}
+     <div className='row'>
+        <div className='row-header'></div> {/* Empty cell for row header corner */}
+        {getColumnHeaders().map((header, index) => (
+          <div key={index} className='header-cell'>{header}</div>
+        ))}
+      </div>
+ {/* Render Rows and Cells */}
+    {gridCells.map((row, rowIdx) => (
+    <div key={rowIdx} className='row'>
+      <div className='row-header'>{rowIdx + 1}</div> {/* Row Number */}
+      {row.map((cell, cellIdx) => (
+      <div key={`${rowIdx}-${cellIdx}`} className='cell-container' onContextMenu={(e) => handleContextMenu(e, rowIdx, cellIdx)}>
+      <CellBox initCell={cell} />
+    </div>
+     ))}
+ </div>
+ ))}
     </div>
   );
 };

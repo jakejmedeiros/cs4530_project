@@ -1,3 +1,4 @@
+import Papa from "papaparse";
 import { Cells } from "./cellsImpl";
 import { ICells } from "src/interfaces/cells.interface";
 
@@ -136,7 +137,31 @@ export class Grid {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
-    
 
+  // Load data from a CSV string and update the grid
+public loadFromCSVString(csvString: string): void {
+    const parsedData = Papa.parse<string[]>(csvString, { header: false }).data;
+  
+    if (parsedData.length > 0) {
+      // Assuming the grid instance is already created, otherwise, create one
+      const grid = Grid.getInstance();
+  
+      // Determine the size of the grid based on the CSV data
+      const maxRows = parsedData.length;
+      const maxColumns = Math.max(...parsedData.map(row => row.length));
+  
+      // Initialize the grid with the determined size
+      grid.initialize(maxRows, maxColumns);
+  
+      // Populate the grid with data from the CSV
+      parsedData.forEach((row, rowIndex) => {
+        row.forEach((value, columnIndex) => {
+          const cell = new Cells(value, rowIndex, columnIndex);
+          grid.setCellInGrid(rowIndex, columnIndex, cell);
+        });
+      });
+    }
+  }
+  
 
     }

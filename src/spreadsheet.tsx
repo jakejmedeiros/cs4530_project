@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import './spreadsheet.css';
 import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
@@ -72,6 +72,22 @@ export default function Spreadsheet() {
     setGridCells([...grid.getCells()])
   }
 
+  const handleLoadCsv = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const csvString = e.target?.result as string;
+        grid.loadFromCSVString(csvString);
+        setGridCells([...grid.getCells()]);
+      };
+
+      reader.readAsText(file);
+    }
+  };
+
   const toColumnName = (columnNumber: number): string => {
     let columnName = '';
     let dividend = columnNumber + 1;
@@ -120,6 +136,7 @@ export default function Spreadsheet() {
           <button onClick={() => downloadCsv()} className="download-csv-button">
           Download CSV
           </button>
+          <input type='file' accept='.csv' onChange={handleLoadCsv} />
         </div>
       </div>
      {/* Render Column Headers */}

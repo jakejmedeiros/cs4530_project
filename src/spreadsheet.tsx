@@ -101,7 +101,7 @@ export default function Spreadsheet() {
           </div>
           {row.map((cell, cellIdx) => (
             <div key={`${rowIdx}-${cellIdx}`} className='cell-container' onContextMenu={(e) => handleContextMenu(e, rowIdx, cellIdx)}>
-              <CellBox initCell={cell} />
+              <CellBox key={`${rowIdx}-${cellIdx}`} initCell={cell} />
             </div>
           ))}
         </div>

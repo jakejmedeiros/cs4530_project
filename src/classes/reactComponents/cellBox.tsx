@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { ICells } from '../../interfaces/cells.interface';
 import './cellBox.style.css'
 import { Parser } from '../utils/parser';
@@ -10,7 +10,7 @@ interface CellProps {
 
 // A react component to visualize a cell class
 export const CellBox: React.FC<CellProps> = ({ initCell }) => {
-  const [cell, setCell] = useState(initCell);
+  const cell: ICells = initCell;
   const [cellEditValue, setCellEditValue] = useState((cell.getValue() ?? "").toString());
   const grid = Grid.getInstance();
 
@@ -19,12 +19,17 @@ export const CellBox: React.FC<CellProps> = ({ initCell }) => {
   // Handles when the user enters an input into a cell and either presses the enter/return key or clicks outside of this cell.
   // Checks if user inputted a formula, reference, or literal value
   const handleEnterPress = (): void => {
+    if (cell.getState() !== cellEditValue) {
+      grid.detachCellFromObserved(cell);
+      cell.setData("");
+    }
     cell.setState(cellEditValue);
     Parser.runCellState(cell);
-    setCellEditValue((cell.getValue() ?? "").toString());
+    setCellEditValue(cell.getValue() === "" ? cell.getState().toString() : cell.getValue().toString());
     const x: number = cell.getX();
     const y: number = cell.getY();
     grid.setCellInGrid(x, y, cell);
+    console.log(grid);
   };
         
   return (

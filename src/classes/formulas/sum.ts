@@ -9,31 +9,32 @@ import { InvalidDataTypeError } from "../errorHandling/InvalidDataTypeError";
 // A class to calculate the sum of a given list of numbers
 export class Sum implements IFormulas {
 
-    public constructor(private cell: ICells, private references: ICells[], private sum: number = NaN) {}
+    public constructor(private cell: ICells, private references: ICells[], private savedSum: number = NaN) {}
     
     // Calculates the sum of this Sum's list of cells
     public calculate(): number {
         let sum: number = 0;
-        for (let i = 0; i < this.references.length; i++) {
-            let cell: ICells = this.references[i];
+        this.references.forEach((cell) => {
             let val = cell.getValue();
             if (typeof val !== 'number') {
                 this.reportError(cell, ErrorType.INVALID_DATA_TYPE);
                 return NaN;
             } else {
-                let num: number = Number(this.references[i].getValue());
+                let num: number = Number(val);
                 sum += num;
             }
-        }
+        });
+        this.savedSum = sum;
         return sum;
     }
 
     // Returns the current sum of this Sum's list of cells
     public getCalculation(): number {
-        let sum: number = this.sum;
+        let sum: number = this.savedSum;
         if (Number.isNaN(sum)) {
             sum = this.calculate();
         }
+        this.savedSum = sum;
         return sum;
     }
 

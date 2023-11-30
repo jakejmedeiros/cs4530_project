@@ -11,6 +11,7 @@ import { InvalidDataTypeError } from '../errorHandling/InvalidDataTypeError';
 import { create, all } from 'mathjs';
 import { InvalidInputError } from '../errorHandling/InvalidInputError';
 import { BadReferenceInFormula } from '../errorHandling/BadReferenceError';
+import { InvalidFormulaSyntax } from '../errorHandling/InvalidFormulaSyntax';
 
 // A class for util methods having to do with parsing
 export class Parser {
@@ -184,7 +185,8 @@ export class Parser {
             return;
         }
         let newValue: String | number = '';
-        const commandList: String[] = state.split(/(\+|-|\*|\/|\^)/);
+        let commandList: String[] = state.trim().split(/(\+|\-|\*|\/|\^)/);
+        commandList = commandList.filter(str => str !== "");
         const commListParenthesis: String[] = this.parseParenthesis(commandList);
         let parsedList: String[] = [];
         let typeTracker: String = "";
@@ -213,11 +215,30 @@ export class Parser {
         };
         if (typeTracker === 'number') {
             newValue = parsedList.join('');
-            // from mathjs package
-            const math = create(all);
-            const result: number = math.evaluate(newValue as string);
-            cell.setData(result);
+            try{
+                // from mathjs package
+                const math = create(all);
+                const result: number = math.evaluate(newValue as string);
+                cell.setData(result);
+            } catch {
+                const err: IErrorAlert = new InvalidFormulaSyntax(cell);
+                alert(err.toText());
+                cell.setData("");
+                cell.setState("");
+                return;
+            }
         } else if (typeTracker === 'string') {
+            const hasInvalidSymbol: boolean = parsedList.some((str) => {
+                const ans: boolean = !this.isStringInput(str) || str !== '+';
+                return ans;
+            });
+            if (hasInvalidSymbol) {
+                const err: IErrorAlert = new InvalidDataTypeError(cell);
+                alert(err.toText());
+                cell.setData("");
+                cell.setState("");
+                return;
+            }
             parsedList = parsedList.filter((str) => str !== "+");
             newValue = parsedList.join('');
             cell.setData(newValue.toString());

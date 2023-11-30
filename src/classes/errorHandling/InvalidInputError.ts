@@ -16,7 +16,7 @@ export class InvalidInputError implements IErrorAlert {
         return "Invalid Input Error: The cell at (" 
         + ColumnNameTranslate.columnToLetter(this.errorCell.getY()+1) + (this.errorCell.getX()+1)
         + `) contains an invalid input. To input a string into a cell, put quotation marks ("") around the `
-        + "input. Otherwise, make sure to write references with the correct syntax (e.g: sum(a1..c4), ref(d4)) and within the existing "
+        + "input. To input a number, just type the number. Otherwise, make sure to write references with the correct syntax (e.g: sum(a1..c4), ref(d4)) and within the existing "
         + "spreadsheet."
     }
 }

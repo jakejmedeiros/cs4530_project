@@ -139,7 +139,7 @@ export class Grid {
 
     //Save the entire grid into a .csv file
     public saveToCSV(): void {
-        const csvContent = this.cells.map(row => row.map(cell => cell.getValue().toString()).join(',')).join('\n');
+        const csvContent = this.cells.map(row => row.map(cell => cell.getState().toString()).join(',')).join('\n');
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
 

@@ -142,26 +142,36 @@ export class Grid {
 public loadFromCSVString(csvString: string): void {
     const parsedData = Papa.parse<string[]>(csvString, { header: false }).data;
   
-    if (parsedData.length > 0) {
-      // Assuming the grid instance is already created, otherwise, create one
-      const grid = Grid.getInstance();
-  
+    if (parsedData.length > 0) {  
       // Determine the size of the grid based on the CSV data
       const maxRows = parsedData.length;
       const maxColumns = Math.max(...parsedData.map(row => row.length));
   
       // Initialize the grid with the determined size
-      grid.initialize(maxRows, maxColumns);
+      this.initialize(maxRows, maxColumns);
   
       // Populate the grid with data from the CSV
       parsedData.forEach((row, rowIndex) => {
         row.forEach((value, columnIndex) => {
             console.log(value, columnIndex, rowIndex);
-          const cell = new Cells(value, rowIndex, columnIndex);
-          grid.setCellInGrid(rowIndex, columnIndex, cell);
+            let valueInt: number | string = 0;
+            if (parseInt(value)) {
+                valueInt = parseInt(value);
+            } else {
+                valueInt = "\"" + value + "\"";
+            }
+          const cell = new Cells(valueInt, rowIndex, columnIndex);
+          
+          console.log(typeof cell.getValue());
+          this.setCellInGrid(rowIndex, columnIndex, cell);
         });
       });
     }
+    this.cells.forEach((row, rowIndex) => {
+        row.forEach((column, columnIndex) => {
+                this.cells[rowIndex][columnIndex].updateCell();
+        });
+    });
   }
   
 

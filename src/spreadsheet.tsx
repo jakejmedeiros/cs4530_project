@@ -73,19 +73,27 @@ export default function Spreadsheet() {
   }
 
   const handleLoadCsv = (event: React.ChangeEvent<HTMLInputElement>) => {
+    grid.initialize(15, 15);
+    setGridCells(grid.getCells());
+    const reader = new FileReader();
     const file = event.target.files?.[0];
+    (async () => {
+      let newGrid: ICells[][] = [];
 
-    if (file) {
-      const reader = new FileReader();
+      if (file) {
 
-      reader.onload = (e) => {
-        const csvString = e.target?.result as string;
-        grid.loadFromCSVString(csvString);
-        setGridCells([...grid.getCells()]);
-      };
-
-      reader.readAsText(file);
-    }
+        const loadFile = () => {
+          reader.onload = function (e) {
+            const csvString = e.target?.result as string;
+            grid.loadFromCSVString(csvString, setGridCells);
+            newGrid = grid.getCells();
+          };
+        }
+        await loadFile();
+        await setGridCells(newGrid);
+        reader.readAsText(file);
+      }
+    })();
   };
 
   const toColumnName = (columnNumber: number): string => {

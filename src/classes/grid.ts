@@ -81,7 +81,7 @@ export class Grid {
 
 
     // Returns the list of list of cells in this Grid
-    public getCells(): Array<Array<ICells>> {
+    public getCells(): ICells[][] {
         return this.cells;
     }
 
@@ -139,9 +139,11 @@ export class Grid {
     }
 
   // Load data from a CSV string and update the grid
-public loadFromCSVString(csvString: string): void {
+public loadFromCSVString(csvString: string, setGrid: (value: React.SetStateAction<ICells[][]>) => void): void {
     const parsedData = Papa.parse<string[]>(csvString, { header: false }).data;
   
+    let newGrid: ICells[][] = this.cells;
+
     if (parsedData.length > 0) {  
       // Determine the size of the grid based on the CSV data
       const maxRows = parsedData.length;
@@ -151,28 +153,27 @@ public loadFromCSVString(csvString: string): void {
       this.initialize(maxRows, maxColumns);
   
       // Populate the grid with data from the CSV
+      newGrid = [];
+      let newColumn: ICells[] = [];
       parsedData.forEach((row, rowIndex) => {
+        newColumn = [];
         row.forEach((value, columnIndex) => {
-            console.log(value, columnIndex, rowIndex);
-            let valueInt: number | string = 0;
-            if (parseInt(value)) {
-                valueInt = parseInt(value);
+            let valueInt: number | string = "";
+            if (parseFloat(value)) {
+                valueInt = parseFloat(value);
+            } else if (value === "") {
+                valueInt = "";
             } else {
                 valueInt = "\"" + value + "\"";
             }
-          const cell = new Cells(valueInt, rowIndex, columnIndex);
-          
-          console.log(typeof cell.getValue());
-          this.setCellInGrid(rowIndex, columnIndex, cell);
+            const cell = new Cells(valueInt, rowIndex, columnIndex);
+            cell.setState(valueInt.toString());
+            newColumn = [...newColumn, cell];
         });
+        newGrid = [...newGrid, newColumn];
+        this.cells = newGrid;
+        setGrid(newGrid);
       });
-    }
-    this.cells.forEach((row, rowIndex) => {
-        row.forEach((column, columnIndex) => {
-                this.cells[rowIndex][columnIndex].updateCell();
-        });
-    });
+    };
   }
-  
-
-    }
+}

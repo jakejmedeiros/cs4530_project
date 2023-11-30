@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import './spreadsheet.css';
 import { CellBox } from './classes/reactComponents/cellBox';
 import { Grid } from './classes/grid';
@@ -48,6 +48,10 @@ export default function Spreadsheet() {
     setGridCells([...grid.getCells()]); 
   };
 
+  const downloadCsv = () => {
+    grid.saveToCSV();
+  }
+
   const handleAddColumn = () => {
     grid.addColumn();
     setGridCells([...grid.getCells()]); 
@@ -67,6 +71,30 @@ export default function Spreadsheet() {
     grid.clearRow(targetRow);
     setGridCells([...grid.getCells()])
   }
+
+  const handleLoadCsv = (event: React.ChangeEvent<HTMLInputElement>) => {
+    grid.initialize(15, 15);
+    setGridCells(grid.getCells());
+    const reader = new FileReader();
+    const file = event.target.files?.[0];
+    (async () => {
+      let newGrid: ICells[][] = [];
+
+      if (file) {
+
+        const loadFile = () => {
+          reader.onload = function (e) {
+            const csvString = e.target?.result as string;
+            grid.loadFromCSVString(csvString, setGridCells);
+            newGrid = grid.getCells();
+          };
+        }
+        await loadFile();
+        await setGridCells(newGrid);
+        reader.readAsText(file);
+      }
+    })();
+  };
 
   const toColumnName = (columnNumber: number): string => {
     let columnName = '';
@@ -113,6 +141,10 @@ export default function Spreadsheet() {
           <button onClick={() => handleRemoveColumn()} className="remove-column-button">
           Remove Column
           </button>
+          <button onClick={() => downloadCsv()} className="download-csv-button">
+          Download CSV
+          </button>
+          <input type='file' accept='.csv' onChange={handleLoadCsv} />
         </div>
       </div>
      {/* Render Column Headers */}

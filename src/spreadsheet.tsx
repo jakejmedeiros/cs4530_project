@@ -48,6 +48,10 @@ export default function Spreadsheet() {
     setGridCells([...grid.getCells()]); 
   };
 
+  const downloadCsv = () => {
+    grid.saveToCSV();
+  }
+
   const handleAddColumn = () => {
     grid.addColumn();
     setGridCells([...grid.getCells()]); 
@@ -112,6 +116,9 @@ export default function Spreadsheet() {
           <button onClick={handleAddColumn} className="add-column-button">Add Column</button>
           <button onClick={() => handleRemoveColumn()} className="remove-column-button">
           Remove Column
+          </button>
+          <button onClick={() => downloadCsv()} className="download-csv-button">
+          Download CSV
           </button>
         </div>
       </div>

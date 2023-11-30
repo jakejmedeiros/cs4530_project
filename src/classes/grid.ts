@@ -119,4 +119,24 @@ export class Grid {
     public setCellInGrid = (row: number, column: number, cell: ICells): void => {
         this.cells[row][column] = cell;
       }
-}
+    
+
+      
+    //Save the entire grid into a .csv file
+    public saveToCSV(): void {
+        const csvContent = this.cells.map(row => row.map(cell => cell.getValue().toString()).join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+    
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'output.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+
+
+    }

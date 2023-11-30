@@ -60,7 +60,7 @@
   display: flex;
 }
 
-.add-row-button, .remove-row-button, .add-column-button, .remove-column-button {
+.add-row-button, .remove-row-button, .add-column-button, .remove-column-button, .download-csv-button, .upload-csv-button {
   background-color: #f1f3f4;
   color: #5f6368;
   padding: 8px 16px;

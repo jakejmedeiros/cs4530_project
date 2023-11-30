@@ -3,6 +3,7 @@ import Papa from "papaparse";
 import { Cells } from "./cellsImpl";
 import { ICells } from "src/interfaces/cells.interface";
 import { CellObserver } from "./cellObserver";
+import { IFormulas } from "src/interfaces/formulas.interface";
 
 // Class for creating the grid of cells for the spreadsheet. Cells[x][y] where x is the row and y is the column
 // The Grid class is an implementation of the Singletone design pattern
@@ -81,6 +82,109 @@ export class Grid {
             });
         });
     }
+
+    public sortRowAsc(targetIndex: number) {
+        const nonEmptyCells: { value: any; state: String; }[] = [];
+        const emptyCells: { value: any; state: String; }[] = [];
+    
+        this.cells[targetIndex].forEach(cell => {
+            if (cell.getValue() === "") {
+                emptyCells.push({ value: cell.getValue(), state: cell.getState() });
+            } else {
+                nonEmptyCells.push({ value: cell.getValue(), state: cell.getState() });
+            }
+        });
+        nonEmptyCells.sort((a, b) => {
+            if (typeof a.value === 'number' && typeof b.value === 'number') {
+                return a.value - b.value;
+            } else {
+                return a.value.toString().localeCompare(b.value.toString());
+            }
+        });
+        const sortedCells = nonEmptyCells.concat(emptyCells);
+        sortedCells.forEach((pair, index) => {
+            this.cells[targetIndex][index].setState(pair.state);
+            this.cells[targetIndex][index].setData(pair.value);
+            this.cells[targetIndex][index].updateCell();
+        });
+    }
+
+    public sortRowDesc(targetIndex: number) {
+        const nonEmptyCells: { value: any; state: String; }[] = [];
+        const emptyCells: { value: any; state: String; }[] = [];
+    
+        this.cells[targetIndex].forEach(cell => {
+            if (cell.getValue() === "") {
+                emptyCells.push({ value: cell.getValue(), state: cell.getState() });
+            } else {
+                nonEmptyCells.push({ value: cell.getValue(), state: cell.getState() });
+            }
+        });
+        nonEmptyCells.sort((a, b) => {
+            if (typeof a.value === 'number' && typeof b.value === 'number') {
+                return b.value - a.value; // Numerical sort for numbers
+            } else {
+                return b.value.toString().localeCompare(a.value.toString()); // Lexicographical sort for strings
+            }
+        });
+        const sortedCells = nonEmptyCells.concat(emptyCells);
+   
+        sortedCells.forEach((pair, index) => {
+            this.cells[targetIndex][index].setState(pair.state);
+            this.cells[targetIndex][index].setData(pair.value);
+            this.cells[targetIndex][index].updateCell();
+        });
+    }
+    
+    public sortColumnAsc(targetIndex: number): void {
+        // Extracting value-state pairs from the column
+        const valueStatePairs = this.cells.map(row => ({
+            value: row[targetIndex].getValue(),
+            state: row[targetIndex].getState()
+        })).filter(pair => pair.value !== ""); // Exclude empty cells
+    
+        // Sorting the pairs in ascending order
+        valueStatePairs.sort((a, b) => {
+            if (typeof a.value === 'number' && typeof b.value === 'number') {
+                return a.value - b.value;
+            } else {
+                return a.value.toString().localeCompare(b.value.toString());
+            }
+        });
+    
+        // Updating the cells in the column
+        valueStatePairs.forEach((pair, index) => {
+            this.cells[index][targetIndex].setState(pair.state);
+            this.cells[index][targetIndex].setData(pair.value);
+            this.cells[index][targetIndex].updateCell();
+        });
+    }
+
+    public sortColumnDesc(targetIndex: number): void {
+        // Extracting value-state pairs from the column
+        const valueStatePairs = this.cells.map(row => ({
+            value: row[targetIndex].getValue(),
+            state: row[targetIndex].getState()
+        })).filter(pair => pair.value !== ""); // Exclude empty cells
+    
+        // Sorting the pairs in descending order
+        valueStatePairs.sort((a, b) => {
+            if (typeof a.value === 'number' && typeof b.value === 'number') {
+                return b.value - a.value;
+            } else {
+                return b.value.toString().localeCompare(a.value.toString());
+            }
+        });
+    
+        // Updating the cells in the column
+        valueStatePairs.forEach((pair, index) => {
+            this.cells[index][targetIndex].setState(pair.state);
+            this.cells[index][targetIndex].setData(pair.value);
+            this.cells[index][targetIndex].updateCell();
+        });
+    }
+    
+    
 
     // Returns the list of list of cells in this Grid
     public getCells(): ICells[][] {

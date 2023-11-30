@@ -156,6 +156,7 @@ public loadFromCSVString(csvString: string): void {
       // Populate the grid with data from the CSV
       parsedData.forEach((row, rowIndex) => {
         row.forEach((value, columnIndex) => {
+            console.log(value, columnIndex, rowIndex);
           const cell = new Cells(value, rowIndex, columnIndex);
           grid.setCellInGrid(rowIndex, columnIndex, cell);
         });

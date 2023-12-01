@@ -18,6 +18,7 @@ The Spreadsheet Application should now be open.
 
 - to sum a range of numerical cells, click an empty cell and enter sum(a1..a4) which returns the sum from cell A1 to cell A4. (note: no quotes)
 - to average a range of numerical cells, click an empty cell and enter avg(a1..a4) which returns the average of the values from cell A1 to cell A4. 
+- to reference a cell, enter ref(a1) to attach a reference to cell A1. the reference cell will change values upon a change to cell A1. 
 
 # In-Cell Calculation
 

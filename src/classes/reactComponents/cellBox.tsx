@@ -21,7 +21,6 @@ export const CellBox: React.FC<CellProps> = ({ initCell }) => {
   const handleEnterPress = (): void => {
     if (cell.getState() !== cellEditValue) {
       grid.detachCellFromObserved(cell);
-      cell.setData("");
     }
     cell.setState(cellEditValue);
     Parser.runCellState(cell);

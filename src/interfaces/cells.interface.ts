@@ -32,10 +32,6 @@ export interface ICells {
     // Return the data type of this cell's data. It is an enum of 
     getDataType(): DataType;
 
-    // Directly sets the data type of the data this cell contains. Should prioritize using setData() instead to 
-    // keep data value and data type consistent
-    setDataType(dt: DataType): void;
-
     // Returns the state of this cell
     getState(): String;
 
@@ -50,10 +46,6 @@ export interface ICells {
     // Returns the y coordinate of this cell. The y coordinate reflects the row this cell
     // is in
     getY(): number;
-
-    // Sets up for this cell to observe a cell at a given coordinate when that cell is referenced by
-    // this cell 
-    cellReference(row: number, column: number): {refCell: ICells, observer: IObserver}
 
     // Sets the list of cells that this cell is observing through reference and/or sum/average
     setCellsObserved(cells: ICells[]): void;

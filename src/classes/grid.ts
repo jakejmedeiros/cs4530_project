@@ -3,7 +3,6 @@ import Papa from "papaparse";
 import { Cells } from "./cellsImpl";
 import { ICells } from "src/interfaces/cells.interface";
 import { CellObserver } from "./cellObserver";
-import { IFormulas } from "src/interfaces/formulas.interface";
 
 // Class for creating the grid of cells for the spreadsheet. Cells[x][y] where x is the row and y is the column
 // The Grid class is an implementation of the Singletone design pattern
@@ -136,6 +135,7 @@ export class Grid {
         });
     }
     
+    // sorting the columns in ascending order
     public sortColumnAsc(targetIndex: number): void {
         // Extracting value-state pairs from the column
         const valueStatePairs = this.cells.map(row => ({
@@ -159,7 +159,8 @@ export class Grid {
             this.cells[index][targetIndex].updateCell();
         });
     }
-
+    
+    // sorting the columns in descending order
     public sortColumnDesc(targetIndex: number): void {
         // Extracting value-state pairs from the column
         const valueStatePairs = this.cells.map(row => ({
@@ -184,8 +185,6 @@ export class Grid {
         });
     }
     
-    
-
     // Returns the list of list of cells in this Grid
     public getCells(): ICells[][] {
         return this.cells;
@@ -193,7 +192,11 @@ export class Grid {
 
     // Finds a single cell within this Grid using the given row and column
     public getSingleCell(row: number, column: number): ICells {
-        return this.cells[row][column];
+        if (row >= 0 && row < this.cells.length && column >= 0 && column < this.cells[row].length) {
+            return this.cells[row][column];
+        } else {
+            throw new Error('Out of bounds');
+        }
     }
 
     // Saves the selected cell as a way to communicate between the UI and backend
@@ -229,16 +232,22 @@ export class Grid {
     }
 
     // Detaches observers of the cell connected to this cellbox for the cells being observed by this cell
-    public detachCellFromObserved(cell: ICells):void {
+    public detachCellFromObserved(cell: ICells): void {
         const watchedCells: ICells[] = cell.getCellsObserved();
         watchedCells.forEach((c) => {
             const x: number = c.getX();
             const y: number = c.getY();
-            const removeObsCell: ICells = this.getSingleCell(x,y);
-            const obs: IObserver = new CellObserver(cell);
-            removeObsCell.detach(obs);
+            try {
+                const removeObsCell: ICells = this.getSingleCell(x,y);
+                const obs: IObserver = new CellObserver(cell);
+                if (removeObsCell) {
+                    removeObsCell.detach(obs);
+                    cell.setCellsObserved([]);
+                }
+            } catch {
+                return;
+            }
         });
-        cell.setCellsObserved([]);
     }
 
     //Save the entire grid into a .csv file
@@ -282,7 +291,6 @@ export class Grid {
                     } else if (value === "") {
                         valueInt = "";
                     } else {
-                        //valueInt = "\"" + value + "\"";
                         valueInt = value;
                     }
                     const cell = new Cells(valueInt, rowIndex, columnIndex);

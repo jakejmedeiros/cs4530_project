@@ -36,19 +36,27 @@ export class Parser {
     // Parses when a user inputs a reference to a cell. Returns true if the input is a REF, SUM, or AVERAGE command.
     // Returns false if the input is not a command
     private static referenceParse(cell: ICells, input: String): {output: String | number, attaches: ICells[]} {
+        // A type to store the computed value and the cells needing to be observed
         type referenceSet = {
             output: String | number,
             attaches: ICells[]
         }
+
+        // Concrete type
         const ref: referenceSet = {
             output: "",
             attaches: []
         }
+
+        // Check if command is a reference, Sum, or Average command
         try {
+            // Checks the first three characters to see which command it is
             const cleanInput: String = input.trim();
             const command = cleanInput.toUpperCase();
             const method: String = command.substring(0,3);
+
             if (method === "REF") {
+                // Reference command
                 const nearley = require("nearley");
                 const grammar = require("src/grammars/reference.js");
                 const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
@@ -67,6 +75,7 @@ export class Parser {
                 ref.output = refAns;
                 ref.attaches = [refCell];
             } else if (method === "SUM") {
+                // Sum command
                 const nearley = require("nearley");
                 const grammar = require("src/grammars/sumRange.js");
                 const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
@@ -80,6 +89,7 @@ export class Parser {
                 ref.output = cellSum.getCalculation();
                 ref.attaches = cellRange;
             } else if (method === "AVG") {
+                // Average command
                 const nearley = require("nearley");
                 const grammar = require("src/grammars/avgRange.js");
                 const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
@@ -94,12 +104,14 @@ export class Parser {
                 ref.attaches = cellRange;
             }
         } catch {
+            // If the command is not REF, SUM, or AVG, it just returns the original command
             return ref;
         }
         return ref;
     }
 
-    // Checks if the given input is contained within 
+    // Checks if the given input is contained within quotes to ensure that the input is 
+    // meant to be a string
     private static isStringInput = (input: String): boolean => {
         return ((input.charAt(0) === '"'
         && input.charAt(input.length - 1) === '"')
@@ -110,6 +122,9 @@ export class Parser {
     // Checks if the input is a string input or number input
     private static typeCheck = (input: any, cell: ICells): number | String | IErrorAlert => {
         let newInput: number | String | IErrorAlert = "";
+        
+        // Checks if input is a string inputted correctly or number. Otherwise, an error is thrown
+        // for the incorrect syntax of the input
         if (this.isStringInput(input)) {
             newInput = input.substring(1, input.length-1);
         } else if (Number.isFinite(Number(input))) {
@@ -124,7 +139,7 @@ export class Parser {
     // Processes a single command. It can either be a single command or from a formula
     private static commandCheck = (command: String, cell: ICells): String | number | IErrorAlert => {
         let input;
-        //commandReferences is the list of cells to attach an observer to
+        //commandReferences contains the list of cells to attach an observer to
         const commandReferences: {output: String | number, attaches: ICells[]} = this.referenceParse(cell, command);
         if (commandReferences.attaches.length === 0) {
             input = this.typeCheck(command, cell);
@@ -182,16 +197,22 @@ export class Parser {
     // Runs the given state of a cell
     public static runCellState(cell: ICells): void {
         const state: String = cell.getState();
+        // If the input is empty
         if (state === '') {
             cell.setData('');
             return;
         }
         let newValue: String | number = '';
+
+        // Splits the string by arithmetic symbols
         let commandList: String[] = state.split(/(\s*\+|-|\*|\/|\^\s*)/);
         commandList = commandList.filter(str => str !== "");
         const commListParenthesis: String[] = this.parseParenthesis(commandList);
         let parsedList: String[] = [];
         let typeTracker: String = "";
+
+        // Goes through the list of parsed elements from the command, processing them one at a time to make
+        // them constants (number or string)
         for (let command of commListParenthesis) {
             let commItem: String | number | IErrorAlert = "";
             if (command === '+' || command === '-' || command === '*'
@@ -215,6 +236,8 @@ export class Parser {
             }
             parsedList.push(commItem);
         };
+
+        // Checks typeTracker to process parsed command correctly
         if (typeTracker === 'number') {
             newValue = parsedList.join('');
             try{

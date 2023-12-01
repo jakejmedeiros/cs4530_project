@@ -12,7 +12,7 @@ export class Average implements IFormulas {
         let len: number = 0;
         this.references.forEach((cell) => {
             let val = cell.getValue();
-            if (typeof val !== 'number') {
+            if (typeof val !== 'number' || !val) {
                 return NaN;
             } else {
                 let num: number = Number(val);

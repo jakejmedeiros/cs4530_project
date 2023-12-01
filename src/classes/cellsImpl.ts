@@ -83,12 +83,6 @@ export class Cells implements ICells {
     public getDataType(): DataType {
         return this.data.getDataType();
     }
-
-    // Directly sets the data type of the data this cell contains. Should prioritize using setData() instead to 
-    // keep data value and data type consistent
-    public setDataType(dt: DataType): void {
-        this.data.setDataType(dt);
-    }
     
     // Returns the state of this cell
     public getState(): String {
@@ -111,18 +105,6 @@ export class Cells implements ICells {
     // is in
     public getY(): number {
         return this.y;
-    }
-
-    // Sets up for this cell to observe a cell at a given coordinate when that cell is referenced by
-    // this cell
-    public cellReference(row: number, column: number): {refCell: ICells, observer: IObserver} {
-        const grid = Grid.getInstance();
-        const refCell: ICells = grid.getSingleCell(row, column);
-        const observer: IObserver = new CellObserver(this);
-        return {
-            refCell,
-            observer
-        }
     }
 
     // Sets the list of cells that this cell is observing through reference and/or sum/average

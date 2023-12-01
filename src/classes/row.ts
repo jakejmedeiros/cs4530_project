@@ -1,6 +1,4 @@
 import { IRow } from "src/interfaces/row.interface";
-import { Cells } from "./cellsImpl";
-import { ICells } from "src/interfaces/cells.interface";
 import { IColumn } from "src/interfaces/column.interface";
 
 // This class represents a row in a grid containing columns of cells. This class is, in practice, represents a list of lists of cells

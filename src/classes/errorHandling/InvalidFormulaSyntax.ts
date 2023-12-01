@@ -6,10 +6,6 @@ import { ColumnNameTranslate } from "../utils/columnNameTranslate";
 export class InvalidFormulaSyntax implements IErrorAlert {
     public constructor(private errorCell: ICells) {}
 
-    report():any {
-        throw new Error("Method not implemented.");
-    }
-
     // Translates this InvalidFormulaSyntax into text.
     toText():String {
         return "Invalid Formula Syntax Error: The cell at (" 

@@ -7,10 +7,6 @@ import { ColumnNameTranslate } from "../utils/columnNameTranslate";
 export class InvalidDataTypeError implements IErrorAlert {
     public constructor(private errorCell: ICells) {}
 
-    report():any {
-        throw new Error("Method not implemented.");
-    }
-
     // Translates this InvalidDataTypeError into text.
     toText():String {
         return "Invalid Data Type Error: The cell at (" 

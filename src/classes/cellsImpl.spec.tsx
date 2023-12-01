@@ -88,34 +88,6 @@ describe('Cells', () => {
     });
   });
 
-  describe('cellReference()', (): void => {
-    it('The result should contain the same string as cell1 after calling cellReference', () => {
-      const x: number = 5;
-      const y: number = 4;
-
-      const cell1: ICells = grid.getSingleCell(x,y);
-      cell1.setData("test string");
-      const cell2: ICells = new Cells("", x, y);
-
-      const refAns: {refCell: ICells, observer: IObserver} = cell2.cellReference(x,y);
-
-      expect(refAns.refCell.getValue()).toEqual("test string");
-    });
-
-    it('The result should contain the same number as cell1 after calling cellReference', () => {
-      const x: number = 5;
-      const y: number = 4;
-
-      const cell1: ICells = grid.getSingleCell(x,y);
-      cell1.setData(99);
-      const cell2: ICells = new Cells("", x, y);
-
-      const refAns: {refCell: ICells, observer: IObserver} = cell2.cellReference(x,y);
-
-      expect(refAns.refCell.getValue()).toEqual(99);
-    });
-  });
-
   describe('getObservers()', (): void => {
     it('This should return an empty list because it is a brand new cell', () => {
       const cell1: ICells = new Cells("test", 2, 5);
@@ -218,7 +190,7 @@ describe('Cells', () => {
 
       const cellRange: ICells[] = [cell2, cell3, cell4, cell5, cell6, cell7];
 
-      const sum: IFormulas = new Sum(cell1, cellRange);
+      const sum: IFormulas = new Sum(cellRange);
 
       cell1.setData(sum);
 
@@ -237,7 +209,7 @@ describe('Cells', () => {
 
       const cellRange: ICells[] = [cell2, cell3, cell4, cell5, cell6, cell7];
 
-      const avg: IFormulas = new Average(cell1, cellRange);
+      const avg: IFormulas = new Average(cellRange);
 
       cell1.setData(avg);
 

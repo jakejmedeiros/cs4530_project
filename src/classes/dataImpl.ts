@@ -35,12 +35,6 @@ export class Data implements IData {
         return this.dataType;
     }
 
-    // Sets the type of value in this Data. Recommended to just use setData()
-    // to keep the value and its data type matching consistently
-    public setDataType(dt: DataType): void {
-        this.dataType = dt;
-    }
-
     // Sets the value of this Data and finds the data type
     public setData(value: String | number | IFormulas): void {
         if (typeof(value) ===  'string') {

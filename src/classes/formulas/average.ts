@@ -4,24 +4,29 @@ import { IFormulas } from "../../interfaces/formulas.interface";
 // A class to calculate the average of values in a selected list of cells
 export class Average implements IFormulas {
 
-    public constructor(private cell: ICells, private references: ICells[], private savedAvg: number = NaN) {}
+    public constructor(private references: ICells[], private savedAvg: number = NaN) {}
 
     // Calculates the average of this Average's list of cells
     public calculate(): number {
         let sum: number = 0;
-        const len: number = this.references.length;
+        let len: number = 0;
         this.references.forEach((cell) => {
             let val = cell.getValue();
-            if (typeof val !== 'number') {
+            if (typeof val !== 'number' || !val) {
                 return NaN;
             } else {
                 let num: number = Number(val);
                 sum += num;
+                len++;
             }
         });
-        const avg: number = sum / len;
-        this.savedAvg = avg;
-        return avg;
+        if (len === 0) {
+            return 0;
+        } else {
+            const avg: number = sum / len;
+            this.savedAvg = avg;
+            return avg;
+        }
     }
 
     // Returns the current average of this Average's list of cells
@@ -32,9 +37,5 @@ export class Average implements IFormulas {
         }
         this.savedAvg = avg;
         return avg;
-    }
-
-    public getReferences(): ICells[] {
-        return this.references;
     }
 }

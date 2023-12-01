@@ -4,14 +4,14 @@ import { IFormulas } from "../../interfaces/formulas.interface";
 // A class to calculate the sum of a given list of numbers
 export class Sum implements IFormulas {
 
-    public constructor(private cell: ICells, private references: ICells[], private savedSum: number = NaN) {}
+    public constructor(private references: ICells[], private savedSum: number = NaN) {}
     
     // Calculates the sum of this Sum's list of cells
     public calculate(): number {
         let sum: number = 0;
         this.references.forEach((cell) => {
             let val = cell.getValue();
-            if (typeof val !== 'number') {
+            if (typeof val !== 'number' || !val) {
                 return NaN;
             } else {
                 let num: number = Number(val);
@@ -30,9 +30,5 @@ export class Sum implements IFormulas {
         }
         this.savedSum = sum;
         return sum;
-    }
-
-    public getReferences(): ICells[] {
-        return this.references;
     }
 }

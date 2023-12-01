@@ -128,7 +128,7 @@ export class Parser {
         if (this.isStringInput(input)) {
             newInput = input.substring(1, input.length-1);
         } else if (Number.isFinite(Number(input))) {
-            newInput = Number(input);
+            newInput = parseFloat(input);
         } else {
             const err: IErrorAlert = new InvalidInputError(cell);
             newInput = err;
@@ -206,6 +206,10 @@ export class Parser {
 
         // Splits the string by arithmetic symbols
         let commandList: String[] = state.split(/(\s*\+|-|\*|\/|\^\s*)/);
+        if (commandList[0].trim() === '-' && commandList.length > 1) {
+            commandList[1] = commandList[0].concat(commandList[1] as string);
+            commandList = commandList.slice(0, commandList.length);
+        }
         commandList = commandList.filter(str => str !== "");
         const commListParenthesis: String[] = this.parseParenthesis(commandList);
         let parsedList: String[] = [];
@@ -214,7 +218,7 @@ export class Parser {
         // Goes through the list of parsed elements from the command, processing them one at a time to make
         // them constants (number or string)
         for (let command of commListParenthesis) {
-            let commItem: String | number | IErrorAlert = "";
+            let commItem: String | number | IErrorAlert;
             if (command === '+' || command === '-' || command === '*'
                 || command === '/' || command === '^' 
                 || command === '(' || command === ')') {

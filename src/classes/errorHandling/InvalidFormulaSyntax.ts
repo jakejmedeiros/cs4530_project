@@ -9,7 +9,7 @@ export class InvalidFormulaSyntax implements IErrorAlert {
     // Translates this InvalidFormulaSyntax into text.
     toText():String {
         return "Invalid Formula Syntax Error: The cell at (" 
-        + ColumnNameTranslate.columnToLetter(this.errorCell.getY()+1) + (this.errorCell.getX()+1)
+        + ColumnNameTranslate.columnToLetter(this.errorCell.getY()) + (this.errorCell.getX()+1)
         + ") contains invalid formula syntax. For example, there may be a missing or incorrectly place parenthesis."
     }
 }

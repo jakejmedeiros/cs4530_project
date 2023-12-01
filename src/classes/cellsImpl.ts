@@ -3,7 +3,6 @@ import { ICells } from "../interfaces/cells.interface";
 import { IData } from "../interfaces/data.interface";
 import { IFormulas } from "../interfaces/formulas.interface";
 import { IObserver } from "../interfaces/observer.interface";
-import { CellObserver } from "./cellObserver";
 import { Data } from "./dataImpl";
 import { Grid } from "./grid";
 import { Parser } from "./utils/parser";

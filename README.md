@@ -23,5 +23,6 @@ The Spreadsheet Application should now be open.
 # In-Cell Calculation
 
 - within a cell you can add, subtract, multiply, and divide numbers. for example entering 12/4 in a cell and clicking enter will produce 3 in the entered cell. 
-- you can also concatenate strings within cells, for example entering "a" + "b" (note: quotes only surround strings) will produce "ab" in the entered cell. 
+- you can also concatenate strings within cells, for example entering "a" + "b" (note: quotes only surround strings) will produce "ab" in the entered cell.
+- you cannot mix types in a formula, even when parts of the formula are referencing other cells. For example entering 34 + "foo" will cause an error.
 
